@@ -1,5 +1,7 @@
-# Dockerfile
-FROM wordpress
+ARG PHP_VERSION=7.4
+ARG WORDPRESS_VERSION=5.9.3
+
+FROM wordpress:${WORDPRESS_VERSION}-php${PHP_VERSION}-apache
 
 ARG PLUGIN_NAME=wp-graphql-filter-query
 

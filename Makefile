@@ -9,6 +9,9 @@ build:
 composer-install:
 	$(COMPOSER) install
 
+composer-update:
+	$(COMPOSER) update
+
 run:
 	docker-compose up -d
 	docker-compose exec wp $(BIN_DIR)/wait-for-it.sh db:3306
@@ -21,7 +24,7 @@ setup:
 	docker-compose exec wp $(BIN_DIR)/setup-wp
 
 lint:
-	$(COMPOSER) phpcs
+	docker-compose exec wp composer lint
 
 test:
 	docker-compose exec wp composer phpunit
