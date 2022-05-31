@@ -11,9 +11,9 @@ RUN apt-get -qq update ; apt-get -y install unzip curl sudo subversion mariadb-c
 # Install wp-cli
 RUN curl https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar > /usr/local/bin/wp-cli.phar \
 	&& echo "#!/bin/bash" > /usr/local/bin/wp-cli \
-	&& echo "su www-data -c \"/usr/local/bin/wp-cli.phar --path=/var/www/html \$*\"" >> /usr/local/bin/wp-cli \
-	&& chmod 755 /usr/local/bin/wp-cli* \
-	&& echo "*** wp-cli command installed"
+	&& echo "su www-data -c \"/usr/local/bin/wp-cli.phar --path=/var/www/html \$*\"" >> /usr/local/bin/wp \
+	&& chmod 755 /usr/local/bin/wp* \
+	&& echo "*** wp command installed"
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
