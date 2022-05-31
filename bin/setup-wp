@@ -6,6 +6,7 @@ if ! $(wp core is-installed); then
     echo "Waiting for MySQL..."
     wp core install --url=http://localhost:8080 --title=Example --admin_user=admin --admin_password=admin --admin_email=admin@example.com --path=/var/www/html
     wp plugin install ${WP_REQUIRED_PLUGINS} --activate
+    wp plugin activate wp-graphql-filter-query
 
     # Settings
     wp config set GRAPHQL_DEBUG true
