@@ -2,6 +2,9 @@
   "name": "wpengine/wp-graphql-filter-query",
   "description": "Fitlers and aggregates for wp-graphql",
   "config": {
+    "platform": {
+      "php": "7.4.23"
+    },
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
     }
