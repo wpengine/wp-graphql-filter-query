@@ -32,7 +32,7 @@
   },
   "scripts": {
     "phpunit": "vendor/bin/phpunit",
-    "lint": "parallel-lint -e php --no-colors --exclude vendor .",
+    "lint": "vendor/bin/parallel-lint --exclude .git --exclude app --exclude vendor .",
     "phpcs": "phpcs",
     "phpcs:fix": "phpcbf",
     "suite": [

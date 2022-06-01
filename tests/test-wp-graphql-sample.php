@@ -28,10 +28,9 @@ class TestWPGraphQLSample extends WP_UnitTestCase {
 			'first' => 1,
 		];
 
-
 		$results = do_graphql_request( $query, 'postsQuery', $variables );
 
-		$this->assertArrayHasKey( 'errors', $results );
+		$this->assertArrayNotHasKey( 'errors', $results );
 		$this->assertNotEmpty( $results );
 	}
 }

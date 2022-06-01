@@ -4,7 +4,7 @@ DC=docker-compose
 
 all: composer-install build run setup lint test
 
-build: 
+build:
 	$(DC) build
 
 composer-install:
@@ -25,7 +25,10 @@ setup:
 	$(DC) exec wp $(BIN_DIR)/setup-wp
 
 lint:
-	$(DC) exec wp composer lint
+	$(DC) exec wp composer phpcs
+
+lint-fix:
+	$(DC) exec wp composer phpcs:fix
 
 test:
 	$(DC) exec wp composer phpunit
