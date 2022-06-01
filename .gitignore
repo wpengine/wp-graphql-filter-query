@@ -1,1 +1,4 @@
 /vendor/
+.idea/
+wordpress
+wordpress-tests-lib
