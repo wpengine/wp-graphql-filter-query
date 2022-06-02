@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+WP_REQUIRED_PLUGINS="wp-graphql query-monitor"
+
+if ! $(wp core is-installed); then
+    echo "Waiting for MySQL..."
+    wp core install --url=http://localhost:8080 --title=Example --admin_user=admin --admin_password=admin --admin_email=admin@example.com --path=/var/www/html
+    wp plugin install ${WP_REQUIRED_PLUGINS} --activate
+    wp plugin activate wp-graphql-filter-query
+
+    # Settings
+    wp config set GRAPHQL_DEBUG true
+
+    # Set post permalink structure to post name to allow wp graphql to work
+    wp option update permalink_structure '/%postname%'
+else
+    echo "WordPress is ready."
+fi

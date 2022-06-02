@@ -9,7 +9,9 @@
  * Domain Path:     /languages
  * Version:         0.1.0
  *
- * @package         Wp_Graphql_Filter_Query
+ * @package         WP_Graphql_Filter_Query
  */
 
 // Your code starts here.
+
+namespace WPGraphQL;
