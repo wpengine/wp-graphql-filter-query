@@ -1,0 +1,59 @@
+
+steps:
+  # Install composer ... Dockerfile seems to do this already?
+  # - name: 'composer'
+  #   id: 'Composer Install'
+  #   args: ["install"]
+  #   dir: "${_PLUGIN_DIR}"
+
+  # Build docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Test Image'
+    entrypoint: 'bash'
+    args: ['-c', 'docker build -f `pwd`/Dockerfile -t $_TEST_IMAGE .']
+
+  # Test - option-a (inline)
+  # - name: 'gcr.io/cloud-builders/docker'
+  #   id: 'Run Tests'
+  #   args:
+  #     -  'run'
+  #     -  '$_TEST_IMAGE' 
+  #     -  'wp composer phpunit'
+
+  # Test - option-b (script)
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Run Tests'
+    args:
+      -  'run'
+      -  '$_TEST_IMAGE' 
+      -  './scripts/run-unit-tests.sh'
+
+  # Lint 1 - after build (build first to create target 'vendor' folder)?
+  # - name: 'worldpeaceio/wordpress-integration'
+  #   id: 'Run Lint'
+  #   entrypoint: 'vendor/bin/phpcs'
+  #   dir: "${_PLUGIN_DIR}"
+
+  # Lint 2-option-a (inline)
+  # - name: 'gcr.io/cloud-builders/docker'
+  #   id: 'Run Linting'
+  #   args:
+  #     -  'run'
+  #     -  '$_TEST_IMAGE' 
+  #     -  'wp composer lint'
+
+  # Lint 2-option-b (script)
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Run Tests'
+    args:
+      -  'run'
+      -  '$_TEST_IMAGE' 
+      -  './scripts/run-lint.sh'
+
+substitutions:
+  _TEST_IMAGE: "test-image"
+  _PLUGIN_DIR: "."
+  _GCP_TARGET_PROJECT: "wp-engine-headless-staging"
+
+  # Should I be saving container somewhere linke below address?
+  # _GCP_CONTAINER_REGISTRY_TARGET_PROJECT: "wpe-cr/atlas/ce-staging
