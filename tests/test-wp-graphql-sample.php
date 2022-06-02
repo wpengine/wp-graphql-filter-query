@@ -30,7 +30,7 @@ class TestWPGraphQLSample extends WP_UnitTestCase {
 
 		$results = do_graphql_request( $query, 'postsQuery', $variables );
 
-		$this->assertArrayNotHasKey( 'errors', $results );
+		$this->assertArrayHasKey( 'errors', $results );
 		$this->assertNotEmpty( $results );
 	}
 }
