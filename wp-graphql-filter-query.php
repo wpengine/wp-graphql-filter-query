@@ -9,9 +9,17 @@
  * Domain Path:     /languages
  * Version:         0.1.0
  *
- * @package         WP_Graphql_Filter_Query
+ * @package         WPGraphqlFilterQuery
  */
 
 // Your code starts here.
+use WPGraphQLFilterQuery\FilterQuery;
 
-namespace WPGraphQL;
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
+require __DIR__ . '/vendor/autoload.php';
+
+
+new FilterQuery();

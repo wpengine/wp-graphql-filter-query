@@ -1,8 +1,9 @@
-BIN_DIR=/var/www/html/wp-content/plugins/wp-graphql-filter-query/bin/
-COMPOSER=docker run --rm -v `pwd`:/app -w /app composer
+PLUGIN_DIR=/var/www/html/wp-content/plugins/wp-graphql-filter-query
+BIN_DIR=$(PLUGIN_DIR)/bin/
+COMPOSER=docker run --rm -it -v `pwd`:/app -w /app composer
 DC=docker-compose
 
-all: composer-install build run setup lint test
+all: composer-install composer-dump-autoload build run setup lint test
 
 build:
 	$(DC) build
@@ -12,6 +13,9 @@ composer-install:
 
 composer-update:
 	$(COMPOSER) update
+
+composer-dump-autoload:
+	$(COMPOSER) dump-autoload
 
 run:
 	$(DC) up -d
@@ -32,5 +36,8 @@ lint-fix:
 
 test:
 	$(DC) exec wp composer phpunit
+
+test-watch:
+	$(DC) exec -w $(PLUGIN_DIR) wp ./vendor/bin/phpunit-watcher watch
 
 reset: down all
