@@ -1,0 +1,39 @@
+
+steps:
+  - name: 'composer'
+    id: composer-install
+    args: ["install"]
+
+  - id: docker-compose-up
+    name: 'docker/compose'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        DOCKER_BUILDKIT=1 docker-compose up -d
+        docker-compose exec -T wp /var/www/html/wp-content/plugins/wp-graphql-filter-query/bin/wait-for-it.sh db:3306
+        docker-compose exec -T wp install-wp-tests
+
+  - id: lint
+    name: 'docker/compose'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        docker-compose exec -T wp composer phpcs
+
+  - id: test
+    name: 'docker/compose'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        docker-compose exec -T wp composer phpunit
+
+  - id: clean
+    name: 'docker/compose'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        docker-compose down

@@ -41,3 +41,8 @@ test-watch:
 	$(DC) exec -w $(PLUGIN_DIR) wp ./vendor/bin/phpunit-watcher watch
 
 reset: down all
+
+gbuild-pull-requests:
+	gcloud builds submit \
+		--config="cloud-build/pull-requests.yaml" \
+		--project="wp-engine-headless-build"
