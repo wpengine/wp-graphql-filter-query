@@ -1,16 +1,16 @@
 
 steps:
-  # Install composer ... Dockerfile seems to do this already?
-  # - name: 'composer'
-  #   id: 'Composer Install'
-  #   args: ["install"]
-  #   dir: "${_PLUGIN_DIR}"
-
   # Build docker image
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Build Test Image'
     entrypoint: 'bash'
     args: ['-c', 'docker build -f `pwd`/Dockerfile -t $_TEST_IMAGE .']
+
+  # Install composer ... Dockerfile seems to do this already?
+  - name: 'composer'
+    id: 'Composer Install'
+    args: ["install"]
+    dir: "${_PLUGIN_DIR}"
 
   # Test - option-a (inline)
   # - name: 'gcr.io/cloud-builders/docker'
