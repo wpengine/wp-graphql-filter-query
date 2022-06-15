@@ -33,6 +33,5 @@ class TestFilterQuery {
 
 		$this->assertArrayNotHasKey( 'errors', $results, json_encode( $results ) );
 		$this->assertNotEmpty( $results );
-		// $this->assertEquals( [ 'customField' => 'value...' ], $results['data'] ); << This is presently for WPGraphQL fields check, not input one
 	}
 }

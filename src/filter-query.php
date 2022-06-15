@@ -38,31 +38,31 @@ class FilterQuery {
 		register_graphql_input_type(
 			'FilterFieldsString',
 			[
-				'description' => __( 'De', 'de-de' ),
+				'description' => __( 'String Field Match Arguments', 'your-textdomain' ),
 				'fields'      => [
 					'in'      => [
 						'type'        => [ 'list_of' => 'String' ],
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, At Least One Item Of The String Array Arg Passed Here Must Be Contained Within The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'notIn'   => [
 						'type'        => [ 'list_of' => 'String' ],
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, Not One Item Of The String Array Arg Passed Here Can Be Contained Within The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'like'    => [
 						'type'        => 'String',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Relate To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'notLike' => [
 						'type'        => 'String',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Not Relate To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'eq'      => [
 						'type'        => 'String',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Be An Exact Match To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'notEq'   => [
 						'type'        => 'String',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Not Match To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 				],
 			]
@@ -71,31 +71,31 @@ class FilterQuery {
 		register_graphql_input_type(
 			'FilterFieldsInteger',
 			[
-				'description' => __( 'De', 'de-de' ),
+				'description' => __( 'Integer Field Match Arguments', 'your-textdomain' ),
 				'fields'      => [
 					'in'      => [
 						'type'        => [ 'list_of' => 'Integer' ],
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, At Least One Item Of The String Array Arg Passed Here Must Be Contained Within The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'notIn'   => [
 						'type'        => [ 'list_of' => 'Integer' ],
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, Not One Item Of The String Array Arg Passed Here Can Be Contained Within The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'like'    => [
 						'type'        => 'Integer',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Relate To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'notLike' => [
 						'type'        => 'Integer',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Not Relate To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'eq'      => [
 						'type'        => 'Integer',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Be An Exact Match To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 					'notEq'   => [
 						'type'        => 'Integer',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Not Match To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'your-textdomain' ),
 					],
 				],
 			]
@@ -104,15 +104,15 @@ class FilterQuery {
 		register_graphql_input_type(
 			'TagOrCategoryFields',
 			[
-				'description' => __( 'De', 'de-de' ),
+				'description' => __( 'Taxonomy fields For Filtering', 'your-textdomain' ),
 				'fields'      => [
 					'name' => [
 						'type'        => 'FilterFieldsString',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'ID field For Filtering, Of Type String', 'your-textdomain' ),
 					],
 					'id'   => [
 						'type'        => 'FilterFieldsInteger',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'ID field For Filtering, Of Type Integer', 'your-textdomain' ),
 					],
 				],
 			]
@@ -121,15 +121,15 @@ class FilterQuery {
 		register_graphql_input_type(
 			'TagOrCategory',
 			[
-				'description' => __( 'De', 'de-de' ),
+				'description' => __( 'Taxonomies Where Filtering Supported', 'your-textdomain' ),
 				'fields'      => [
 					'tag'      => [
 						'type'        => 'TagOrCategoryFields',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'Tags Object Fields Allowable For Filtering', 'your-textdomain' ),
 					],
 					'category' => [
 						'type'        => 'TagOrCategoryFields',
-						'description' => __( 'De', 'de-de' ),
+						'description' => __( 'Category Object Fields Allowable For Filtering', 'your-textdomain' ),
 					],
 				],
 			]
@@ -142,11 +142,7 @@ class FilterQuery {
 			'filter',
 			[
 				'type'        => 'TagOrCategory',
-				'description' => __( 'Filtering for fields in result, not fields in args', 'your-textdomain' ),
-				'resolve'     => function( $post, $args, $context, $info ) {
-					graphql_debug( [ '[WPGraphQL Spy] Filter Args:' => $args ] ); // < MUST ENABLE DEBUG IN WPGraphQL SETTINGS.
-					return 'value...' . implode( '', $args );
-				},
+				'description' => __( 'Filtering Queried Results By Taxonomy Objects', 'your-textdomain' ),
 			]
 		);
 	}
