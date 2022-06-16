@@ -136,9 +136,9 @@ class FilterQuery {
 		);
 
 		// Add { filter: TagOrCategory.TagOrCategoryFields.FilterFieldsInteger } input object in Posts.where args connector, until we figure how to add to root Posts object with args.
-		$taxonomy_filter_supported_types = array('Post', 'Page', 'User');
-		
-		foreach ($taxonomy_filter_supported_types as &$type) {
+		$taxonomy_filter_supported_types = array( 'Post', 'Page', 'User', 'CustomPostTypeName' );
+
+		foreach ( $taxonomy_filter_supported_types as &$type ) {
 			$graphql_single_name = $type;
 			register_graphql_field(
 				'RootQueryTo' . $graphql_single_name . 'ConnectionWhereArgs',
@@ -149,6 +149,6 @@ class FilterQuery {
 				]
 			);
 		}
-		unset($type);
+		unset( $type );
 	}
 }

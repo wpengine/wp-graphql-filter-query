@@ -101,9 +101,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 				}',
 			'result4_IsNot' => 'data',
 		);
-		for ( $x = 1; $x <= count($query_and_results)/2; $x++ ) {
-			$results = do_graphql_request( $query_and_results['query' . $x] );
-			$this->assertArrayNotHasKey( $query_and_results['result' . $x . '_IsNot'], $results, json_encode( $results ) );
+		$tests_count = count( $query_and_results ) / 2;
+		for ( $x = 1; $x <= $tests_count; $x++ ) {
+			$results = do_graphql_request( $query_and_results[ 'query' . $x ] );
+			$this->assertArrayNotHasKey( $query_and_results[ 'result' . $x . '_IsNot' ], $results, json_encode( $results ) );
 			$this->assertNotEmpty( $results );
 		}
 	}
