@@ -136,7 +136,20 @@ class FilterQuery {
 		);
 
 		// Add { filter: TagOrCategory.TagOrCategoryFields.FilterFieldsInteger } input object in Posts.where args connector, until we figure how to add to root Posts object with args.
-		$taxonomy_filter_supported_types = array( 'Post', 'Page', 'User' );
+		$default_supported_wp_types = array( 'Post', 'Page' );
+		$cpt_type_names             = get_post_types(
+			array(
+				'public'   => true,
+				'_builtin' => false,
+			),
+			'names'
+		);
+
+		foreach ( $cpt_type_names as $name ) {
+			$cpt_type_names[ $name ] = ucwords( $name );
+		}
+
+		$taxonomy_filter_supported_types = array_merge( $default_supported_wp_types, $cpt_type_names );
 
 		foreach ( $taxonomy_filter_supported_types as &$type ) {
 			$graphql_single_name = $type;

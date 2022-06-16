@@ -35,8 +35,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 				}
 			}',
 			'validPostQueryResult_IsNot' => 'errors',
-			'validUserQuery'             => 'query  {
-				users(
+			'validPageQuery'             => 'query  {
+				pages(
 					where: {
 						filter: {
 							category: {
@@ -57,19 +57,20 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				) {
 					nodes {
-						name
+						title
+						content
 					}
 				}
 			}',
-			'validUserQueryResult_IsNot' => 'errors',
+			'validPageQueryResult_IsNot' => 'errors',
 		);
 
 		$post_result = do_graphql_request( $query_and_results['validPostQuery'] );
 		$this->assertArrayNotHasKey( $query_and_results['validPostQueryResult_IsNot'], $post_result, json_encode( $post_result ) );
 		$this->assertNotEmpty( $post_result );
-		$user_result = do_graphql_request( $query_and_results['validUserQuery'] );
-		$this->assertArrayNotHasKey( $query_and_results['validUserQueryResult_IsNot'], $user_result, json_encode( $user_result ) );
-		$this->assertNotEmpty( $user_result );
+		$page_result = do_graphql_request( $query_and_results['validPageQuery'] );
+		$this->assertArrayNotHasKey( $query_and_results['validPageQueryResult_IsNot'], $page_result, json_encode( $page_result ) );
+		$this->assertNotEmpty( $page_result );
 	}
 
 	public function test_filterable_types_reject_invalid_tax_filter_args() {
@@ -102,8 +103,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 				}
 			}',
 			'invalidPostQueryResult_IsNot' => 'data',
-			'invalidUserQuery'             => 'query  {
-				tags(
+			'invalidPageQuery'             => 'query  {
+				pages(
 					where: {
 						filter: {
 							category: {
@@ -124,19 +125,20 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				) {
 					nodes {
-						slug
+						title
+						content
 					}
 				}
 			}',
-			'invalidUserQueryResult_IsNot' => 'data',
+			'invalidPageQueryResult_IsNot' => 'data',
 		);
 
 		$post_result = do_graphql_request( $query_and_results['invalidPostQuery'] );
 		$this->assertArrayNotHasKey( $query_and_results['invalidPostQueryResult_IsNot'], $post_result, json_encode( $post_result ) );
 		$this->assertNotEmpty( $post_result );
-		$user_result = do_graphql_request( $query_and_results['invalidUserQuery'] );
-		$this->assertArrayNotHasKey( $query_and_results['invalidUserQueryResult_IsNot'], $user_result, json_encode( $user_result ) );
-		$this->assertNotEmpty( $user_result );
+		$page_result = do_graphql_request( $query_and_results['invalidPageQuery'] );
+		$this->assertArrayNotHasKey( $query_and_results['invalidPageQueryResult_IsNot'], $page_result, json_encode( $page_result ) );
+		$this->assertNotEmpty( $page_result );
 	}
 
 	public function test_non_filterable_types_reject_all_filter_args() {
