@@ -102,7 +102,7 @@ class FilterQuery {
 		);
 
 		register_graphql_input_type(
-			'TagOrCategoryFields',
+			'TaxonomyFilterFields',
 			[
 				'description' => __( 'Taxonomy fields For Filtering', 'your-textdomain' ),
 				'fields'      => [
@@ -119,16 +119,16 @@ class FilterQuery {
 		);
 
 		register_graphql_input_type(
-			'TagOrCategory',
+			'TaxonomyFilter',
 			[
 				'description' => __( 'Taxonomies Where Filtering Supported', 'your-textdomain' ),
 				'fields'      => [
 					'tag'      => [
-						'type'        => 'TagOrCategoryFields',
+						'type'        => 'TaxonomyFilterFields',
 						'description' => __( 'Tags Object Fields Allowable For Filtering', 'your-textdomain' ),
 					],
 					'category' => [
-						'type'        => 'TagOrCategoryFields',
+						'type'        => 'TaxonomyFilterFields',
 						'description' => __( 'Category Object Fields Allowable For Filtering', 'your-textdomain' ),
 					],
 				],
@@ -136,14 +136,19 @@ class FilterQuery {
 		);
 
 		// Add { filter: TagOrCategory.TagOrCategoryFields.FilterFieldsInteger } input object in Posts.where args connector, until we figure how to add to root Posts object with args.
-		$graphql_single_name = 'Post';
-		register_graphql_field(
-			'RootQueryTo' . $graphql_single_name . 'ConnectionWhereArgs',
-			'filter',
-			[
-				'type'        => 'TagOrCategory',
-				'description' => __( 'Filtering Queried Results By Taxonomy Objects', 'your-textdomain' ),
-			]
-		);
+		$taxonomy_filter_supported_types = array('Post', 'Page', 'User');
+		
+		foreach ($taxonomy_filter_supported_types as &$type) {
+			$graphql_single_name = $type;
+			register_graphql_field(
+				'RootQueryTo' . $graphql_single_name . 'ConnectionWhereArgs',
+				'filter',
+				[
+					'type'        => 'TaxonomyFilter',
+					'description' => __( 'Filtering Queried Results By Taxonomy Objects', 'your-textdomain' ),
+				]
+			);
+		}
+		unset($type);
 	}
 }
