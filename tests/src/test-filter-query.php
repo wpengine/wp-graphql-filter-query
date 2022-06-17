@@ -5,175 +5,194 @@ class TestFilterQuery extends WP_UnitTestCase {
 		new \WPGraphQLFilterQuery\FilterQuery();
 	}
 
+	/**
+	 * @dataProvider  message_provider
+	 *
+	 * @param string $query GraphQL query to test.
+	 * @param string $expected_result what the root object of query return should be.
+	 * @param string $expected_not_result what the root object of query return should not be.
+	 */
+	public function make_request_and_assert( $query, $expected_result, $expected_not_result ) {
+		$result = do_graphql_request( $query );
+		$this->assertArrayHasKey( $expected_result, $result, json_encode( $result ) );
+		$this->assertArrayNotHasKey( $expected_not_result, $result, json_encode( $result ) );
+		$this->assertNotEmpty( $result );
+	}
+
 	public function test_filterable_types_accept_valid_tax_filter_args() {
 		$query_and_results = array(
-			'validPostQuery'             => 'query  {
-				posts(
-					where: {
-						filter: {
-							category: {
-								id: {
-									eq: 10
+			array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									id: {
+										eq: 10
+									},
+									name: {
+										eq: "foo"
+									}
 								},
-								name: {
-									eq: "foo"
-								}
-							},
-							tag: {
-								name: {
-									in: ["foo", "bar"],
-									like: "tst"
+								tag: {
+									name: {
+										in: ["foo", "bar"],
+										like: "tst"
+									}
 								}
 							}
 						}
+					) {
+						nodes {
+							title
+							content
+						}
 					}
-				) {
-					nodes {
-						title
-						content
-					}
-				}
-			}',
-			'validPostQueryResult_IsNot' => 'errors',
-			'validPageQuery'             => 'query  {
-				pages(
-					where: {
-						filter: {
-							category: {
-								id: {
-									eq: 10
+				}',
+				'data',
+				'errors',
+			),
+			array(
+				'query {
+					pages(
+						where: {
+							filter: {
+								category: {
+									id: {
+										eq: 10
+									},
+									name: {
+										eq: "foo"
+									}
 								},
-								name: {
-									eq: "foo"
-								}
-							},
-							tag: {
-								name: {
-									in: ["foo", "bar"],
-									like: "tst"
+								tag: {
+									name: {
+										in: ["foo", "bar"],
+										like: "tst"
+									}
 								}
 							}
 						}
+					) {
+						nodes {
+							title
+							content
+						}
 					}
-				) {
-					nodes {
-						title
-						content
-					}
-				}
-			}',
-			'validPageQueryResult_IsNot' => 'errors',
+				}',
+				'data',
+				'errors',
+			),
 		);
 
-		$post_result = do_graphql_request( $query_and_results['validPostQuery'] );
-		$this->assertArrayNotHasKey( $query_and_results['validPostQueryResult_IsNot'], $post_result, json_encode( $post_result ) );
-		$this->assertNotEmpty( $post_result );
-		$page_result = do_graphql_request( $query_and_results['validPageQuery'] );
-		$this->assertArrayNotHasKey( $query_and_results['validPageQueryResult_IsNot'], $page_result, json_encode( $page_result ) );
-		$this->assertNotEmpty( $page_result );
+		$this->make_request_and_assert( ...$query_and_results[0] );
+		$this->make_request_and_assert( ...$query_and_results[1] );
 	}
 
 	public function test_filterable_types_reject_invalid_tax_filter_args() {
 		$query_and_results = array(
-			'invalidPostQuery'             => 'query  {
-				posts(
-					where: {
-						filter: {
-							category: {
-								id: {
-									eq: "10"
+			array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									id: {
+										eq: "10"
+									},
+									name: {
+										eq: "foo"
+									}
 								},
-								name: {
-									eq: "foo"
-								}
-							},
-							tag: {
-								name: {
-									in: ["foo", "bar"],
-									like: "tst"
+								tag: {
+									name: {
+										in: ["foo", "bar"],
+										like: "tst"
+									}
 								}
 							}
 						}
+					) {
+						nodes {
+							title
+							content
+						}
 					}
-				) {
-					nodes {
-						title
-						content
-					}
-				}
-			}',
-			'invalidPostQueryResult_IsNot' => 'data',
-			'invalidPageQuery'             => 'query  {
-				pages(
-					where: {
-						filter: {
-							category: {
-								id: {
-									eq: "10"
+				}',
+				'errors',
+				'data',
+			),
+			array(
+				'query  {
+					pages(
+						where: {
+							filter: {
+								category: {
+									id: {
+										eq: "10"
+									},
+									name: {
+										eq: "foo"
+									}
 								},
-								name: {
-									eq: "foo"
-								}
-							},
-							tag: {
-								name: {
-									in: ["foo", "bar"],
-									like: "tst"
+								tag: {
+									name: {
+										in: ["foo", "bar"],
+										like: "tst"
+									}
 								}
 							}
 						}
+					) {
+						nodes {
+							title
+							content
+						}
 					}
-				) {
-					nodes {
-						title
-						content
-					}
-				}
-			}',
-			'invalidPageQueryResult_IsNot' => 'data',
+				}',
+				'errors',
+				'data',
+			),
 		);
 
-		$post_result = do_graphql_request( $query_and_results['invalidPostQuery'] );
-		$this->assertArrayNotHasKey( $query_and_results['invalidPostQueryResult_IsNot'], $post_result, json_encode( $post_result ) );
-		$this->assertNotEmpty( $post_result );
-		$page_result = do_graphql_request( $query_and_results['invalidPageQuery'] );
-		$this->assertArrayNotHasKey( $query_and_results['invalidPageQueryResult_IsNot'], $page_result, json_encode( $page_result ) );
-		$this->assertNotEmpty( $page_result );
+		$this->make_request_and_assert( ...$query_and_results[0] );
+		$this->make_request_and_assert( ...$query_and_results[1] );
 	}
 
 	public function test_non_filterable_types_reject_all_filter_args() {
 		$query_and_results = array(
-			'unsupportedTagsFilterQuery'       => 'query  {
-				tags(
-					where: {
-						filter: {
-							category: {
-								id: {
-									eq: 10
+			array(
+				'query  {
+					tags(
+						where: {
+							filter: {
+								category: {
+									id: {
+										eq: 10
+									},
+									name: {
+										eq: "foo"
+									}
 								},
-								name: {
-									eq: "foo"
-								}
-							},
-							tag: {
-								name: {
-									in: ["foo", "bar"],
-									like: "tst"
+								tag: {
+									name: {
+										in: ["foo", "bar"],
+										like: "tst"
+									}
 								}
 							}
 						}
+					) {
+						nodes {
+							slug
+						}
 					}
-				) {
-					nodes {
-						slug
-					}
-				}
-			}',
-			'unsupportedTagsQueryResult_IsNot' => 'data',
+				}',
+				'errors',
+				'data',
+			),
 		);
 
-		$tags_result = do_graphql_request( $query_and_results['unsupportedTagsFilterQuery'] );
-		$this->assertArrayNotHasKey( $query_and_results['unsupportedTagsQueryResult_IsNot'], $tags_result, json_encode( $tags_result ) );
-		$this->assertNotEmpty( $tags_result );
+		$this->make_request_and_assert( ...$query_and_results[0] );
 	}
 }
