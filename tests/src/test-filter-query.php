@@ -18,7 +18,7 @@ class TestFilterQuery extends WP_UnitTestCase {
 		$this->assertNotEmpty( $result );
 	}
 
-	public function data_provider() {
+	public function data_provider(): array {
 		return array(
 			'posts_accept_valid_tax_filter_args'          => array(
 				'query {
