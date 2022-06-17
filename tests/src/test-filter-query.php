@@ -1,25 +1,25 @@
 <?php
 
 class TestFilterQuery extends WP_UnitTestCase {
-	protected function setUp() {
+	protected function setUp(): void {
 		new \WPGraphQLFilterQuery\FilterQuery();
 	}
 
 	/**
-	 * @dataProvider  make_request_and_assert
+	 * @dataProvider  data_provider
 	 *
 	 * @param string $query GraphQL query to test.
 	 * @param string $expected_result what the root object of query return should be.
 	 * @param string $expected_not_result what the root object of query return should not be.
 	 */
-	public function make_request_and_assert( $query, $expected_not_result ) {
+	public function test_schema_exists_for_filters( $query, $expected_not_result ) {
 		$result = do_graphql_request( $query );
 		$this->assertArrayNotHasKey( $expected_not_result, $result, json_encode( $result ) );
 		$this->assertNotEmpty( $result );
 	}
 
-	public function test_filterable_types_accept_valid_tax_filter_args() {
-		$query_and_results = array(
+	public function data_provider() {
+		return array(
 			array(
 				'query {
 					posts(
@@ -80,14 +80,6 @@ class TestFilterQuery extends WP_UnitTestCase {
 				}',
 				'errors',
 			),
-		);
-
-		$this->make_request_and_assert( ...$query_and_results[0] );
-		$this->make_request_and_assert( ...$query_and_results[1] );
-	}
-
-	public function test_filterable_types_reject_invalid_tax_filter_args() {
-		$query_and_results = array(
 			array(
 				'query {
 					posts(
@@ -148,14 +140,6 @@ class TestFilterQuery extends WP_UnitTestCase {
 				}',
 				'data',
 			),
-		);
-
-		$this->make_request_and_assert( ...$query_and_results[0] );
-		$this->make_request_and_assert( ...$query_and_results[1] );
-	}
-
-	public function test_non_filterable_types_reject_all_filter_args() {
-		$query_and_results = array(
 			array(
 				'query  {
 					tags(
@@ -186,7 +170,5 @@ class TestFilterQuery extends WP_UnitTestCase {
 				'data',
 			),
 		);
-
-		$this->make_request_and_assert( ...$query_and_results[0] );
 	}
 }
