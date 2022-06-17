@@ -12,9 +12,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 	 * @param string $expected_result what the root object of query return should be.
 	 * @param string $expected_not_result what the root object of query return should not be.
 	 */
-	public function make_request_and_assert( $query, $expected_result, $expected_not_result ) {
+	public function make_request_and_assert( $query, $expected_not_result ) {
 		$result = do_graphql_request( $query );
-		$this->assertArrayHasKey( $expected_result, $result, json_encode( $result ) );
 		$this->assertArrayNotHasKey( $expected_not_result, $result, json_encode( $result ) );
 		$this->assertNotEmpty( $result );
 	}
@@ -49,7 +48,6 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'data',
 				'errors',
 			),
 			array(
@@ -80,7 +78,6 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'data',
 				'errors',
 			),
 		);
@@ -119,7 +116,6 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'errors',
 				'data',
 			),
 			array(
@@ -150,7 +146,6 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'errors',
 				'data',
 			),
 		);
@@ -188,7 +183,6 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'errors',
 				'data',
 			),
 		);
