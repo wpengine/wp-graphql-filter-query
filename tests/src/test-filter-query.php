@@ -6,7 +6,7 @@ class TestFilterQuery extends WP_UnitTestCase {
 	}
 
 	/**
-	 * @dataProvider  message_provider
+	 * @dataProvider  make_request_and_assert
 	 *
 	 * @param string $query GraphQL query to test.
 	 * @param string $expected_result what the root object of query return should be.
