@@ -3,6 +3,23 @@
 class TestFilterQuery extends WP_UnitTestCase {
 	protected function setUp(): void {
 		new \WPGraphQLFilterQuery\FilterQuery();
+
+		register_post_type(
+			'zombie',
+			array(
+				'labels'              => array(
+					'name' => 'Zombies',
+				),
+				'public'              => true,
+				'capability_type'     => 'post',
+				'map_meta_cap'        => false,
+				/** WP GRAPHQL */
+				'show_in_graphql'     => true,
+				'hierarchical'        => true,
+				'graphql_single_name' => 'zombie',
+				'graphql_plural_name' => 'zombies',
+			)
+		);
 	}
 
 	/**
@@ -53,6 +70,36 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'pages_accept_valid_tax_filter_args'          => array(
 				'query {
 					pages(
+						where: {
+							filter: {
+								category: {
+									id: {
+										eq: 10
+									},
+									name: {
+										eq: "foo"
+									}
+								},
+								tag: {
+									name: {
+										in: ["foo", "bar"],
+										like: "tst"
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'data',
+			),
+			'zombies_accept_valid_tax_filter_args'        => array(
+				'query {
+					zombies(
 						where: {
 							filter: {
 								category: {
