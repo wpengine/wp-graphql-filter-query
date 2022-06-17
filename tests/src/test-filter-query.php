@@ -9,18 +9,18 @@ class TestFilterQuery extends WP_UnitTestCase {
 	 * @dataProvider  data_provider
 	 *
 	 * @param string $query GraphQL query to test.
-	 * @param string $expected_result what the root object of query return should be.
-	 * @param string $expected_not_result what the root object of query return should not be.
+	 * @param string $expected_result What the root object of query return should be.
+	 * @throws Exception
 	 */
-	public function test_schema_exists_for_filters( $query, $expected_not_result ) {
+	public function test_schema_exists_for_filters( string $query, string $expected_result ) {
 		$result = do_graphql_request( $query );
-		$this->assertArrayNotHasKey( $expected_not_result, $result, json_encode( $result ) );
+		$this->assertArrayHasKey( $expected_result, $result, json_encode( $result ) );
 		$this->assertNotEmpty( $result );
 	}
 
 	public function data_provider() {
 		return array(
-			array(
+			'posts_accept_valid_tax_filter_args'          => array(
 				'query {
 					posts(
 						where: {
@@ -48,9 +48,9 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'errors',
+				'data',
 			),
-			array(
+			'pages_accept_valid_tax_filter_args'          => array(
 				'query {
 					pages(
 						where: {
@@ -78,9 +78,9 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'errors',
+				'data',
 			),
-			array(
+			'posts_reject_invalid_tax_filter_args'        => array(
 				'query {
 					posts(
 						where: {
@@ -108,9 +108,9 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'data',
+				'errors',
 			),
-			array(
+			'pages_reject_invalid_tax_filter_args'        => array(
 				'query  {
 					pages(
 						where: {
@@ -138,9 +138,9 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'data',
+				'errors',
 			),
-			array(
+			'non_filterable_types_reject_all_filter_args' => array(
 				'query  {
 					tags(
 						where: {
@@ -167,7 +167,7 @@ class TestFilterQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'data',
+				'errors',
 			),
 		);
 	}
