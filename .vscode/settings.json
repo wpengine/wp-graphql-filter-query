@@ -1,0 +1,11 @@
+{
+  "phpcs.standard": "./.phpcs.xml.dist",
+  "phpcs.ignorePatterns": ["vendor"],
+  "phpcs.executablePath": "./vendor/bin/phpcs",
+  "phpcbf.onsave": true,
+  "phpcbf.executablePath": "vendor/bin/phpcbf",
+  "phpcbf.configSearch": true,
+  "phpSniffer.autoDetect": true,
+  "editor.formatOnSaveTimeout": 5000,
+  "phpcbf.debug": true,
+}

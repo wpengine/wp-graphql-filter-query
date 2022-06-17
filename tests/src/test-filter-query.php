@@ -1,7 +1,7 @@
 <?php
 
 class TestFilterQuery extends WP_UnitTestCase {
-	protected function setUp() {
+	protected function setUp(): void {
 		new \WPGraphQLFilterQuery\FilterQuery();
 	}
 
