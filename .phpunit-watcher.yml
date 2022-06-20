@@ -1,0 +1,10 @@
+watch:
+  directories:
+    - src
+    - tests
+  exclude:
+    - lib
+  fileMask: '*.php'
+  ignoreDotFiles: true
+  ignoreVCS: true
+  ignoreVCSIgnored: false
