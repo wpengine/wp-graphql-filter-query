@@ -7,7 +7,7 @@ ARG PLUGIN_NAME=wp-graphql-filter-query
 ARG php_ini_file_path="/usr/local/etc/php/php.ini"
 
 # Setup the OS
-RUN apt-get -qq update ; apt-get -y install unzip curl sudo subversion mariadb-client \
+RUN apt-get -qq update ; apt-get -y install unzip curl sudo subversion mariadb-client less \
 	&& apt-get autoclean \
 	&& chsh -s /bin/bash www-data
 
