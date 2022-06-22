@@ -1,5 +1,5 @@
 PLUGIN_DIR=/var/www/html/wp-content/plugins/wp-graphql-filter-query
-BIN_DIR=$(PLUGIN_DIR)/bin/
+BIN_DIR=$(PLUGIN_DIR)/bin
 COMPOSER=docker run --rm -it -v `pwd`:/app -w /app composer
 DC=docker-compose
 
@@ -21,6 +21,7 @@ run:
 	$(DC) up -d
 	$(DC) exec wp $(BIN_DIR)/wait-for-it.sh db:3306
 	$(DC) exec wp install-wp-tests
+	$(DC) cp  wp:/tmp/wordpress-tests-lib `pwd`/.wordpress/wordpress-tests-lib
 
 down:
 	$(DC) down --volumes
