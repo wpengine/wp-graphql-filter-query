@@ -218,4 +218,85 @@ class TestFilterQuery extends WP_UnitTestCase {
 			),
 		);
 	}
+
+	public function data_for_schema_exists_for_aggregations(): array {
+		return [
+			'posts_have_aggregations'   => [
+				'query {
+					posts {
+						nodes {
+							title
+						}
+						aggregations {
+							tags {
+								key
+								count
+							}
+						}
+					}
+				}',
+				'data',
+			],
+			'pages_have_aggregations'   => [
+				'query {
+					pages {
+						nodes {
+							title
+						}
+						aggregations {
+							tags {
+								key
+								count
+							}
+						}
+					}
+				}',
+				'data',
+			],
+			'zombies_have_aggregations' => [
+				'query {
+					zombies {
+						nodes {
+							title
+						}
+						aggregations {
+							tags {
+								key
+								count
+							}
+						}
+					}
+				}',
+				'data',
+			],
+			'non_existing_type_should_not_have_aggregations' => [
+				'query {
+					doesNotExist {
+						nodes {
+							title
+						}
+						aggregations {
+							tags {
+								key
+								count
+							}
+						}
+					}
+				}',
+				'errors',
+			],
+		];
+	}
+
+	/**
+	 *
+	 * @dataProvider data_for_schema_exists_for_aggregations
+	 * @return void
+	 * @throws Exception
+	 */
+	public function test_schema_exists_for_aggregations( $query, $expected ) {
+		$result = do_graphql_request( $query );
+		$this->assertArrayHasKey( $expected, $result, json_encode( $result ) );
+		$this->assertNotEmpty( $result );
+	}
 }
