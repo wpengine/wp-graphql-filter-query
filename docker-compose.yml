@@ -11,11 +11,15 @@ services:
       MYSQL_PASSWORD: wordpress
     volumes:
       - db-data:/var/lib/mysql
+    ports:
+      - 3307:3306
 
   wp:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        xdebug: 1
     restart: unless-stopped
     environment:
       WORDPRESS_DB_HOST: db

@@ -29,6 +29,9 @@ down:
 setup:
 	$(DC) exec wp $(BIN_DIR)/setup-wp
 
+shell:
+	$(DC) exec wp bash
+
 lint:
 	$(DC) exec wp composer phpcs
 
@@ -47,3 +50,6 @@ gbuild-pull-requests:
 	gcloud builds submit \
 		--config="cloud-build/pull-requests.yaml" \
 		--project="wp-engine-headless-build"
+
+tail-debug-log:
+	$(DC) exec  --rm wp tail -f /var/www/html/wp-content/debug.log
