@@ -39,7 +39,7 @@ test:
 	$(DC) exec wp composer phpunit
 
 test-watch:
-	$(DC) exec -w $(PLUGIN_DIR) wp ./vendor/bin/phpunit-watcher watch
+	$(DC) exec -w $(PLUGIN_DIR) -e XDEBUG_CONFIG="idekey=VSCODE" wp ./vendor/bin/phpunit-watcher watch
 
 reset: down all
 

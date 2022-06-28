@@ -47,4 +47,5 @@ xdebug.mode=debug \n\
 xdebug.discover_client_host = 1 \n\
 xdebug.log="/var/www/html/xdebug.log" \n\
 xdebug.client_host = "host.docker.internal" \n\
+max_execution_time = 0 \n\
 ' >> $php_ini_file_path

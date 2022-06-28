@@ -299,4 +299,59 @@ class TestFilterQuery extends WP_UnitTestCase {
 		$this->assertArrayHasKey( $expected, $result, json_encode( $result ) );
 		$this->assertNotEmpty( $result );
 	}
+
+
+	public function test_get_tags_aggreations() {
+		$post_id = wp_insert_post(
+			[
+				'post_title'   => 'test',
+				'post_content' => 'test',
+				'post_status'  => 'publish',
+			]
+		);
+
+		wp_set_object_terms( $post_id, [ 'apple', 'wow' ], 'post_tag', true );
+
+		$query = 'query {
+			posts {
+				nodes {
+					title
+				}
+				aggregations {
+					tags {
+						key
+						count
+					}
+					categories {
+						key
+						count
+					}
+				}
+			}
+		}';
+
+		$expected_tags = [
+			[
+				'key'   => 'apple',
+				'count' => 1,
+			],
+			[
+				'key'   => 'wow',
+				'count' => 1,
+			],
+		];
+
+		$expected_categories = [
+			[
+				'key'   => 'Uncategorized',
+				'count' => 1,
+			],
+		];
+
+		$result = do_graphql_request( $query );
+		$this->assertArrayHasKey( 'data', $result, json_encode( $result ) );
+		$this->assertNotEmpty( $result['data']['posts']['aggregations'] );
+		$this->assertEquals( $expected_tags, $result['data']['posts']['aggregations']['tags'] );
+		$this->assertEquals( $expected_categories, $result['data']['posts']['aggregations']['categories'] );
+	}
 }

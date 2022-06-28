@@ -66,7 +66,47 @@ class FilterQuery {
 			// next we are generating the aggregates block for each model.
 			$aggregate_graphql = [];
 			foreach ( $fields as $field ) {
-				$aggregate_graphql[ $field ] = [ 'type' => array( 'list_of' => 'BucketItem' ) ];
+				$aggregate_graphql[ $field ] = [
+					'type'    => array( 'list_of' => 'BucketItem' ),
+					'resolve' => function( $root, $args, $context, $info ) {
+						$taxonomy = $info->fieldName;
+
+						if ( $info->fieldName === 'tags' ) {
+							$taxonomy = 'post_tag';
+						}
+
+						if ( $info->fieldName === 'categories' ) {
+							$taxonomy = 'category';
+						}
+						global $wpdb;
+
+						$results = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT terms.name,taxonomy.count
+							FROM {$wpdb->prefix}terms AS terms
+							INNER JOIN {$wpdb->prefix}term_taxonomy
+							AS taxonomy
+							ON (terms.term_id = taxonomy.term_id)
+							WHERE taxonomy = %s AND taxonomy.count > 0;",
+								$taxonomy
+							)
+						);
+
+						$returns = [];
+
+						if ( $results ) {
+							foreach ( $results as $result ) {
+								if ( $results ) {
+									$returns[] = [
+										'key'   => $result->name,
+										'count' => $result->count,
+									];
+								}
+							}
+						}
+						return $returns;
+					},
+				];
 			}
 
 			// store object name in a variable to DRY up code.
@@ -89,52 +129,7 @@ class FilterQuery {
 				[
 					'type'    => $aggregate_for_type_name,
 					'resolve' => function( $root, $args, $context, $info ) {
-						return [
-							'categories' => [
-								[
-									'key'   => 'soccer',
-									'count' => 25,
-								],
-								[
-									'key'   => 'rugby',
-									'count' => 6,
-								],
-							],
-							'tags'       => [
-								[
-									'key'   => 'adidas',
-									'count' => 2,
-								],
-								[
-									'key'   => 'nike',
-									'count' => 6,
-								],
-							],
-							'seasons'    => [
-								[
-									'key'   => 'spring',
-									'count' => 2,
-								],
-								[
-									'key'   => 'summer',
-									'count' => 6,
-								],
-								[
-									'key'   => 'autumn',
-									'count' => 2,
-								],
-								[
-									'key'   => 'winter',
-									'count' => 30,
-								],
-							],
-							'labels'     => [
-								[
-									'key'   => 'richard',
-									'count' => 2,
-								],
-							],
-						];
+						return [];
 					},
 				]
 			);
