@@ -330,7 +330,7 @@ class FilterQuery {
 	 * @return bool
 	 */
 	private function is_like_operator( string $operator ): bool {
-		return in_array( $operator, [ 'like', 'notLike' ] );
+		return in_array( $operator, [ 'like', 'notLike' ], true );
 	}
 
 	/**
