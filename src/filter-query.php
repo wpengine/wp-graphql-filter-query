@@ -7,6 +7,9 @@
 
 namespace WPGraphQLFilterQuery;
 
+use GraphQL\Type\Definition\ResolveInfo;
+use WPGraphQL\AppContext;
+
 /**
  * Main class.
  */
@@ -185,27 +188,19 @@ class FilterQuery {
 			[
 				'description' => __( 'Integer Field Match Arguments', 'wp-graphql-filter-query' ),
 				'fields'      => [
-					'in'      => [
+					'in'    => [
 						'type'        => [ 'list_of' => 'Integer' ],
 						'description' => __( 'For This To Be Truthy, At Least One Item Of The String Array Arg Passed Here Must Be Contained Within The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
 					],
-					'notIn'   => [
+					'notIn' => [
 						'type'        => [ 'list_of' => 'Integer' ],
 						'description' => __( 'For This To Be Truthy, Not One Item Of The String Array Arg Passed Here Can Be Contained Within The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
 					],
-					'like'    => [
-						'type'        => 'Integer',
-						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Relate To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
-					],
-					'notLike' => [
-						'type'        => 'Integer',
-						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Not Relate To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
-					],
-					'eq'      => [
+					'eq'    => [
 						'type'        => 'Integer',
 						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Be An Exact Match To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
 					],
-					'notEq'   => [
+					'notEq' => [
 						'type'        => 'Integer',
 						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Not Match To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
 					],
@@ -246,8 +241,6 @@ class FilterQuery {
 				],
 			]
 		);
-
-		// Add { filter: TagOrCategory.TagOrCategoryFields.FilterFieldsInteger } input object in Posts.where args connector, until we figure how to add to root Posts object with args.
 		$taxonomy_filter_supported_types = $this->get_supported_post_types();
 
 		foreach ( $taxonomy_filter_supported_types as &$type ) {
@@ -261,7 +254,83 @@ class FilterQuery {
 				]
 			);
 		}
-		unset( $type );
+
+		add_filter(
+			'graphql_post_object_connection_query_args',
+			[ $this, 'apply_filters' ],
+			5,
+			10
+		);
+	}
+
+	/**
+	 * Apply facet filters using graphql_post_object_connection_query_args filter hook.
+	 *
+	 * @param array       $query_args arguments that come from previous filter and will be passed to WP_Query.
+	 * @param mixed       $source Not used.
+	 * @param array       $args WPGraphQL input arguments.
+	 * @param AppContext  $context Not used.
+	 * @param ResolveInfo $info Not used.
+	 *
+	 * @return array|mixed
+	 */
+	public function apply_filters( $query_args, $source, $args, $context, $info ) {
+		if ( empty( $args['where']['filter'] ) ) {
+			return $query_args;
+		}
+		$operator_mappings = array(
+			'in'      => 'IN',
+			'notIn'   => 'NOT IN',
+			'eq'      => 'IN',
+			'notEq'   => 'NOT IN',
+			'like'    => 'IN',
+			'notLike' => 'NOT IN',
+		);
+		$c                 = 0;
+		foreach ( $args['where']['filter'] as $taxonomy_input => $data ) {
+			foreach ( $data as $field_name => $field_data ) {
+				foreach ( $field_data as $operator => $terms ) {
+					$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
+					$is_like_operator = $this->is_like_operator( $operator );
+					$taxonomy         = $taxonomy_input === 'tag' ? 'post_tag' : 'category';
+
+					$terms = ! $is_like_operator ? $terms : get_terms(
+						array(
+							'name__like' => esc_attr( $terms ),
+							'fields'     => 'ids',
+							'taxonomy'   => $taxonomy,
+						)
+					);
+
+					$result = array(
+						'terms'    => $terms,
+						'taxonomy' => $taxonomy,
+						'operator' => $mapped_operator,
+						'field'    => ( $field_name === 'id' || $is_like_operator ) ? 'term_id' : 'name',
+					);
+
+					$query_args['tax_query'][] = $result;
+					$c++;
+				}
+			}
+		}
+
+		if ( $c > 1 ) {
+			$query_args['tax_query']['relation'] = 'AND';
+		}
+
+		return $query_args;
+	}
+
+	/**
+	 * Check if operator is like or notLike
+	 *
+	 * @param string $operator Received operator - not mapped.
+	 *
+	 * @return bool
+	 */
+	private function is_like_operator( string $operator ): bool {
+		return in_array( $operator, [ 'like', 'notLike' ], true );
 	}
 
 	/**
