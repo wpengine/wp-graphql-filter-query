@@ -121,6 +121,463 @@ class TestFilterQuery extends WP_UnitTestCase {
 
 	public function filters_data_provider(): array {
 		return array(
+			'posts_valid_filter_category_name_eq'          => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										eq: "animal"
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
+			),
+
+			'posts_valid_filter_category_name_in'          => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										in: ["animal", "feline"]
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
+			),
+			'posts_valid_filter_category_name_notEq'       => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										notEq: "animal"
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : []}}}',
+			),
+			'posts_valid_filter_category_name_notIn'       => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										notIn: ["feline"]
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
+			),
+			'posts_valid_filter_category_name_eq_and_in'   => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										eq: "canine",
+										in: ["animal"]
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
+			),
+			'posts_valid_filter_category_name_notEq_and_in' => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										notEq: "canine",
+										in: ["animal"]
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"} ]}}}',
+			),
+			'posts_valid_filter_category_name_neq_and_notIn' => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										eq: "feline",
+										notIn: ["red"]
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"} ]}}}',
+			),
+			'posts_valid_filter_category_name_neq_and_notIn_multiple' => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										eq: "feline",
+										notIn: ["car", "animal"]
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : []}}}',
+			),
+			'posts_valid_filter_category_name_like'        => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										like: "nima",
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
+			),
+			'posts_valid_filter_category_name_notLike'     => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										notLike: "fel",
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
+			),
+			'posts_valid_filter_category_name_like_eq'     => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										like: "anim",
+										eq: "canine"
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
+			),
+			'posts_valid_filter_category_name_like_notEq'  => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										like: "nim",
+										notEq: "feline"
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
+			),
+			'posts_valid_filter_category_name_like_in_multiple' => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										like: "ani",
+										in: ["canine", "feline"]
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
+			),
+			'posts_valid_filter_category_name_notLike_in_multiple' => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										notLike: "ani",
+										in: ["canine", "feline"]
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : []}}}',
+			),
+			'posts_valid_filter_category_name_like_notIn'  => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										like: "ani",
+										notIn: ["feline"]
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
+			),
+			'posts_valid_filter_category_id_eq'            => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									id: {
+										eq: ' . self::CATEGORY_CANINE_ID_TO_BE_REPLACED . '
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
+			),
+			'posts_valid_filter_category_id_notEq'         => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									id: {
+										notEq: ' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . '
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
+			),
+			'posts_valid_filter_category_id_in'            => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									id: {
+										in: [' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . ']
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
+			),
+			'posts_valid_filter_category_id_notIn'         => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									id: {
+										notIn: [' . self::CATEGORY_CANINE_ID_TO_BE_REPLACED . ']
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
+			),
+			'posts_valid_filter_category_name_eq_id_notEq' => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										eq: "animal"
+									},
+									id: {
+										notEq: ' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . '
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
+			),
+			'posts_valid_filter_category_name_eq_id_Eq'    => array(
+				'query {
+					posts(
+						where: {
+							filter: {
+								category: {
+									name: {
+										eq: "animal"
+									},
+									id: {
+										eq: ' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . '
+									}
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
+			),
 			'posts_valid_filter_tag_name_eq'               => array(
 				'query {
 					posts(
@@ -486,48 +943,6 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_id_like_should_not_work' => array(
-				'query {
-					posts(
-						where: {
-							filter: {
-								tag: {
-									id: {
-										like: ' . self::TAG_SMALL_ID_TO_BE_REPLACED . '
-									}
-								}
-							}
-						}
-					) {
-						nodes {
-							title
-							content
-						}
-					}
-				}',
-				'{"data": { "posts": {"nodes" : []}}}',
-			),
-			'posts_valid_filter_tag_id_notLike_should_not_work' => array(
-				'query {
-					posts(
-						where: {
-							filter: {
-								tag: {
-									id: {
-										notLike: ' . self::TAG_SMALL_ID_TO_BE_REPLACED . '
-									}
-								}
-							}
-						}
-					) {
-						nodes {
-							title
-							content
-						}
-					}
-				}',
-				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
 			),
 			'posts_valid_filter_tag_id_in'                 => array(
 				'query {

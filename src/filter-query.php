@@ -188,27 +188,19 @@ class FilterQuery {
 			[
 				'description' => __( 'Integer Field Match Arguments', 'wp-graphql-filter-query' ),
 				'fields'      => [
-					'in'      => [
+					'in'    => [
 						'type'        => [ 'list_of' => 'Integer' ],
 						'description' => __( 'For This To Be Truthy, At Least One Item Of The String Array Arg Passed Here Must Be Contained Within The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
 					],
-					'notIn'   => [
+					'notIn' => [
 						'type'        => [ 'list_of' => 'Integer' ],
 						'description' => __( 'For This To Be Truthy, Not One Item Of The String Array Arg Passed Here Can Be Contained Within The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
 					],
-					'like'    => [
-						'type'        => 'Integer',
-						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Relate To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
-					],
-					'notLike' => [
-						'type'        => 'Integer',
-						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Not Relate To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
-					],
-					'eq'      => [
+					'eq'    => [
 						'type'        => 'Integer',
 						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Be An Exact Match To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
 					],
-					'notEq'   => [
+					'notEq' => [
 						'type'        => 'Integer',
 						'description' => __( 'For This To Be Truthy, The Arg Passed Here Must Not Match To The Calling Taxonomy Field, By Way Of Predefined Aggregates', 'wp-graphql-filter-query' ),
 					],
@@ -249,8 +241,6 @@ class FilterQuery {
 				],
 			]
 		);
-
-		// Add { filter: TagOrCategory.TagOrCategoryFields.FilterFieldsInteger } input object in Posts.where args connector, until we figure how to add to root Posts object with args.
 		$taxonomy_filter_supported_types = $this->get_supported_post_types();
 
 		foreach ( $taxonomy_filter_supported_types as &$type ) {
@@ -320,7 +310,7 @@ class FilterQuery {
 					);
 
 					$query_args['tax_query'][] = $result;
-					$c ++;
+					$c++;
 				}
 			}
 		}

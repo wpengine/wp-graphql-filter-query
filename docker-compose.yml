@@ -18,8 +18,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        xdebug: 1
     restart: unless-stopped
     environment:
       WORDPRESS_DB_HOST: db
