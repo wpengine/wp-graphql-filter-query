@@ -291,7 +291,7 @@ class FilterQuery {
 			foreach ( $data as $field_name => $field_data ) {
 				foreach ( $field_data as $operator => $terms ) {
 					$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
-					$is_like_operator = $this->exists_like_operator( $operator );
+					$is_like_operator = $this->is_like_operator( $operator );
 					$taxonomy         = $taxonomy_input === 'tag' ? 'post_tag' : 'category';
 
 					$terms = ! $is_like_operator ? $terms : get_terms(
@@ -329,7 +329,7 @@ class FilterQuery {
 	 *
 	 * @return bool
 	 */
-	private function exists_like_operator( string $operator ): bool {
+	private function is_like_operator( string $operator ): bool {
 		return in_array( $operator, [ 'like', 'notLike' ] );
 	}
 
