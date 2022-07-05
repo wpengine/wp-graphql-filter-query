@@ -17,6 +17,9 @@ composer-update:
 composer-dump-autoload:
 	$(COMPOSER) dump-autoload
 
+clean:
+	rm -rf .wordpress
+
 run:
 	$(DC) up -d
 	$(DC) exec wp $(BIN_DIR)/wait-for-it.sh db:3306
@@ -44,7 +47,7 @@ test:
 test-watch:
 	$(DC) exec -w $(PLUGIN_DIR) wp ./vendor/bin/phpunit-watcher watch
 
-reset: down all
+reset: down clean all
 
 gbuild-pull-requests:
 	gcloud builds submit \
