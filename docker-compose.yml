@@ -20,6 +20,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
+      XDEBUG_CONFIG: ${XDEBUG_CONFIG}
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: root

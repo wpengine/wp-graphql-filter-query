@@ -1,7 +1,7 @@
 PLUGIN_DIR=/var/www/html/wp-content/plugins/wp-graphql-filter-query
 BIN_DIR=$(PLUGIN_DIR)/bin
 COMPOSER=docker run --rm -it -v `pwd`:/app -w /app composer
-DC=docker-compose
+DC=docker compose
 
 all: composer-install composer-dump-autoload build run setup lint test
 
@@ -16,6 +16,9 @@ composer-update:
 
 composer-dump-autoload:
 	$(COMPOSER) dump-autoload
+
+clean:
+	rm -rf .wordpress
 
 run:
 	$(DC) up -d
@@ -44,7 +47,7 @@ test:
 test-watch:
 	$(DC) exec -w $(PLUGIN_DIR) -e XDEBUG_CONFIG="idekey=VSCODE" wp ./vendor/bin/phpunit-watcher watch
 
-reset: down all
+reset: down clean all
 
 gbuild-pull-requests:
 	gcloud builds submit \
