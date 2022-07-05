@@ -1,7 +1,7 @@
 PLUGIN_DIR=/var/www/html/wp-content/plugins/wp-graphql-filter-query
 BIN_DIR=$(PLUGIN_DIR)/bin
 COMPOSER=docker run --rm -it -v `pwd`:/app -w /app composer
-DC=docker-compose
+DC=docker compose
 
 all: composer-install composer-dump-autoload build run setup lint test
 
