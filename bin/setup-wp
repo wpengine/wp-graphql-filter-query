@@ -15,6 +15,10 @@ if ! $(wp core is-installed); then
 
     # Set post permalink structure to post name to allow wp graphql to work
     wp option update permalink_structure '/%postname%'
+
+    wp post create --post_title='cat' --post_status='publish' --post_type='post'
+    wp post create --post_title='dog' --post_status='publish' --post_type='post'
+
 else
     echo "WordPress is ready."
 fi
