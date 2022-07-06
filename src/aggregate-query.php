@@ -78,6 +78,8 @@ class AggregateQuery {
 						}
 						global $wpdb;
 
+						// TODO Find a suitable implementation for caching here.
+						//phpcs:disable
 						$results = $wpdb->get_results(
 							$wpdb->prepare(
 								"SELECT terms.name,taxonomy.count
