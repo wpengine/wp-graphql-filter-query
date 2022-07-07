@@ -102,7 +102,7 @@ class TestAggregateQuery extends WP_UnitTestCase {
 	}
 
 
-	public function test_get_tags_aggreations() {
+	public function test_get_tags_aggregations() {
 		$post_id = wp_insert_post(
 			[
 				'post_title'   => 'test',
