@@ -22,8 +22,8 @@ services:
     environment:
       XDEBUG_CONFIG: ${XDEBUG_CONFIG}
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: root
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DEBUG: 1
       WORDPRESS_CONFIG_EXTRA: |
