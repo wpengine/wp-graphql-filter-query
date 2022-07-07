@@ -16,17 +16,9 @@ class AggregateQuery {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->define_public_hooks();
-	}
-
-	/**
-	 * Define the hooks to register.
-	 *
-	 * @return void
-	 */
-	public function define_public_hooks() {
 		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_aggregation_fields' ] );
 	}
+
 
 	/**
 	 * Define the objects for aggregates.
