@@ -124,12 +124,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_eq'          => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										eq: "animal"
-									}
+						filter: {
+							category: {
+								name: {
+									eq: "animal"
 								}
 							}
 						}
@@ -146,12 +144,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_in'          => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										in: ["animal", "feline"]
-									}
+						filter: {
+							category: {
+								name: {
+									in: ["animal", "feline"]
 								}
 							}
 						}
@@ -167,12 +163,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_notEq'       => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										notEq: "animal"
-									}
+						filter: {
+							category: {
+								name: {
+									notEq: "animal"
 								}
 							}
 						}
@@ -188,12 +182,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_notIn'       => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										notIn: ["feline"]
-									}
+						filter: {
+							category: {
+								name: {
+									notIn: ["feline"]
 								}
 							}
 						}
@@ -209,13 +201,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_eq_and_in'   => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										eq: "canine",
-										in: ["animal"]
-									}
+						filter: {
+							category: {
+								name: {
+									eq: "canine",
+									in: ["animal"]
 								}
 							}
 						}
@@ -231,13 +221,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_notEq_and_in' => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										notEq: "canine",
-										in: ["animal"]
-									}
+						filter: {
+							category: {
+								name: {
+									notEq: "canine",
+									in: ["animal"]
 								}
 							}
 						}
@@ -253,13 +241,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_neq_and_notIn' => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										eq: "feline",
-										notIn: ["red"]
-									}
+						filter: {
+							category: {
+								name: {
+									eq: "feline",
+									notIn: ["red"]
 								}
 							}
 						}
@@ -275,13 +261,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_neq_and_notIn_multiple' => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										eq: "feline",
-										notIn: ["car", "animal"]
-									}
+						filter: {
+							category: {
+								name: {
+									eq: "feline",
+									notIn: ["car", "animal"]
 								}
 							}
 						}
@@ -297,12 +281,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_like'        => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										like: "nima",
-									}
+						filter: {
+							category: {
+								name: {
+									like: "nima",
 								}
 							}
 						}
@@ -318,12 +300,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_notLike'     => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										notLike: "fel",
-									}
+						filter: {
+							category: {
+								name: {
+									notLike: "fel",
 								}
 							}
 						}
@@ -339,13 +319,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_like_eq'     => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										like: "anim",
-										eq: "canine"
-									}
+						filter: {
+							category: {
+								name: {
+									like: "anim",
+									eq: "canine"
 								}
 							}
 						}
@@ -361,13 +339,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_like_notEq'  => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										like: "nim",
-										notEq: "feline"
-									}
+						filter: {
+							category: {
+								name: {
+									like: "nim",
+									notEq: "feline"
 								}
 							}
 						}
@@ -383,13 +359,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_like_in_multiple' => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										like: "ani",
-										in: ["canine", "feline"]
-									}
+						filter: {
+							category: {
+								name: {
+									like: "ani",
+									in: ["canine", "feline"]
 								}
 							}
 						}
@@ -405,13 +379,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_notLike_in_multiple' => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										notLike: "ani",
-										in: ["canine", "feline"]
-									}
+						filter: {
+							category: {
+								name: {
+									notLike: "ani",
+									in: ["canine", "feline"]
 								}
 							}
 						}
@@ -427,13 +399,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_like_notIn'  => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										like: "ani",
-										notIn: ["feline"]
-									}
+						filter: {
+							category: {
+								name: {
+									like: "ani",
+									notIn: ["feline"]
 								}
 							}
 						}
@@ -449,12 +419,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_id_eq'            => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									id: {
-										eq: ' . self::CATEGORY_CANINE_ID_TO_BE_REPLACED . '
-									}
+						filter: {
+							category: {
+								id: {
+									eq: ' . self::CATEGORY_CANINE_ID_TO_BE_REPLACED . '
 								}
 							}
 						}
@@ -470,12 +438,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_id_notEq'         => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									id: {
-										notEq: ' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . '
-									}
+						filter: {
+							category: {
+								id: {
+									notEq: ' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . '
 								}
 							}
 						}
@@ -491,12 +457,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_id_in'            => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									id: {
-										in: [' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . ']
-									}
+						filter: {
+							category: {
+								id: {
+									in: [' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . ']
 								}
 							}
 						}
@@ -512,12 +476,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_id_notIn'         => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									id: {
-										notIn: [' . self::CATEGORY_CANINE_ID_TO_BE_REPLACED . ']
-									}
+						filter: {
+							category: {
+								id: {
+									notIn: [' . self::CATEGORY_CANINE_ID_TO_BE_REPLACED . ']
 								}
 							}
 						}
@@ -533,15 +495,13 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_eq_id_notEq' => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										eq: "animal"
-									},
-									id: {
-										notEq: ' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . '
-									}
+						filter: {
+							category: {
+								name: {
+									eq: "animal"
+								},
+								id: {
+									notEq: ' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . '
 								}
 							}
 						}
@@ -557,15 +517,13 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_category_name_eq_id_Eq'    => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									name: {
-										eq: "animal"
-									},
-									id: {
-										eq: ' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . '
-									}
+						filter: {
+							category: {
+								name: {
+									eq: "animal"
+								},
+								id: {
+									eq: ' . self::CATEGORY_FELINE_ID_TO_BE_REPLACED . '
 								}
 							}
 						}
@@ -581,12 +539,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_eq'               => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										eq: "black"
-									}
+						filter: {
+							tag: {
+								name: {
+									eq: "black"
 								}
 							}
 						}
@@ -602,12 +558,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_in'               => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										in: ["black", "small"]
-									}
+						filter: {
+							tag: {
+								name: {
+									in: ["black", "small"]
 								}
 							}
 						}
@@ -623,12 +577,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_notEq'            => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										notEq: "black"
-									}
+						filter: {
+							tag: {
+								name: {
+									notEq: "black"
 								}
 							}
 						}
@@ -644,12 +596,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_notIn'            => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										notIn: ["small"]
-									}
+						filter: {
+							tag: {
+								name: {
+									notIn: ["small"]
 								}
 							}
 						}
@@ -665,13 +615,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_eq_and_in'        => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										eq: "big",
-										in: ["black"]
-									}
+						filter: {
+							tag: {
+								name: {
+									eq: "big",
+									in: ["black"]
 								}
 							}
 						}
@@ -687,13 +635,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_notEq_and_in'     => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										notEq: "big",
-										in: ["black"]
-									}
+						filter: {
+							tag: {
+								name: {
+									notEq: "big",
+									in: ["black"]
 								}
 							}
 						}
@@ -709,13 +655,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_neq_and_notIn'    => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										eq: "small",
-										notIn: ["red"]
-									}
+						filter: {
+							tag: {
+								name: {
+									eq: "small",
+									notIn: ["red"]
 								}
 							}
 						}
@@ -731,13 +675,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_neq_and_notIn_multiple' => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										eq: "small",
-										notIn: ["red", "black"]
-									}
+						filter: {
+							tag: {
+								name: {
+									eq: "small",
+									notIn: ["red", "black"]
 								}
 							}
 						}
@@ -753,12 +695,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_like'             => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										like: "bl",
-									}
+						filter: {
+							tag: {
+								name: {
+									like: "bl",
 								}
 							}
 						}
@@ -774,12 +714,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_notLike'          => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										notLike: "sm",
-									}
+						filter: {
+							tag: {
+								name: {
+									notLike: "sm",
 								}
 							}
 						}
@@ -795,13 +733,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_like_eq'          => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										like: "bl",
-										eq: "big"
-									}
+						filter: {
+							tag: {
+								name: {
+									like: "bl",
+									eq: "big"
 								}
 							}
 						}
@@ -817,13 +753,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_like_notEq'       => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										like: "lac",
-										notEq: "small"
-									}
+						filter: {
+							tag: {
+								name: {
+									like: "lac",
+									notEq: "small"
 								}
 							}
 						}
@@ -839,13 +773,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_like_in_multiple' => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										like: "bl",
-										in: ["big", "small"]
-									}
+						filter: {
+							tag: {
+								name: {
+									like: "bl",
+									in: ["big", "small"]
 								}
 							}
 						}
@@ -861,13 +793,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_notLike_in_multiple' => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										notLike: "bl",
-										in: ["big", "small"]
-									}
+						filter: {
+							tag: {
+								name: {
+									notLike: "bl",
+									in: ["big", "small"]
 								}
 							}
 						}
@@ -883,13 +813,11 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_like_notIn'       => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										like: "bl",
-										notIn: ["small"]
-									}
+						filter: {
+							tag: {
+								name: {
+									like: "bl",
+									notIn: ["small"]
 								}
 							}
 						}
@@ -905,12 +833,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_id_eq'                 => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									id: {
-										eq: ' . self::TAG_BIG_ID_TO_BE_REPLACED . '
-									}
+						filter: {
+							tag: {
+								id: {
+									eq: ' . self::TAG_BIG_ID_TO_BE_REPLACED . '
 								}
 							}
 						}
@@ -926,12 +852,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_id_notEq'              => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									id: {
-										notEq: ' . self::TAG_SMALL_ID_TO_BE_REPLACED . '
-									}
+						filter: {
+							tag: {
+								id: {
+									notEq: ' . self::TAG_SMALL_ID_TO_BE_REPLACED . '
 								}
 							}
 						}
@@ -947,12 +871,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_id_in'                 => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									id: {
-										in: [' . self::TAG_SMALL_ID_TO_BE_REPLACED . ']
-									}
+						filter: {
+							tag: {
+								id: {
+									in: [' . self::TAG_SMALL_ID_TO_BE_REPLACED . ']
 								}
 							}
 						}
@@ -968,12 +890,10 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_id_notIn'              => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									id: {
-										notIn: [' . self::TAG_BIG_ID_TO_BE_REPLACED . ']
-									}
+						filter: {
+							tag: {
+								id: {
+									notIn: [' . self::TAG_BIG_ID_TO_BE_REPLACED . ']
 								}
 							}
 						}
@@ -989,15 +909,13 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_eq_id_notEq'      => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										eq: "black"
-									},
-									id: {
-										notEq: ' . self::TAG_SMALL_ID_TO_BE_REPLACED . '
-									}
+						filter: {
+							tag: {
+								name: {
+									eq: "black"
+								},
+								id: {
+									notEq: ' . self::TAG_SMALL_ID_TO_BE_REPLACED . '
 								}
 							}
 						}
@@ -1013,15 +931,13 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_valid_filter_tag_name_eq_id_Eq'         => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								tag: {
-									name: {
-										eq: "black"
-									},
-									id: {
-										eq: ' . self::TAG_SMALL_ID_TO_BE_REPLACED . '
-									}
+						filter: {
+							tag: {
+								name: {
+									eq: "black"
+								},
+								id: {
+									eq: ' . self::TAG_SMALL_ID_TO_BE_REPLACED . '
 								}
 							}
 						}
@@ -1037,21 +953,19 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_accept_valid_tax_filter_args'           => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									id: {
-										eq: 10
-									},
-									name: {
-										eq: "foo"
-									}
+						filter: {
+							category: {
+								id: {
+									eq: 10
 								},
-								tag: {
-									name: {
-										in: ["foo", "bar"],
-										like: "tst"
-									}
+								name: {
+									eq: "foo"
+								}
+							},
+							tag: {
+								name: {
+									in: ["foo", "bar"],
+									like: "tst"
 								}
 							}
 						}
@@ -1067,21 +981,19 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'pages_accept_valid_tax_filter_args'           => array(
 				'query {
 					pages(
-						where: {
-							filter: {
-								category: {
-									id: {
-										eq: 10
-									},
-									name: {
-										eq: "foo"
-									}
+						filter: {
+							category: {
+								id: {
+									eq: 10
 								},
-								tag: {
-									name: {
-										in: ["foo", "bar"],
-										like: "tst"
-									}
+								name: {
+									eq: "foo"
+								}
+							},
+							tag: {
+								name: {
+									in: ["foo", "bar"],
+									like: "tst"
 								}
 							}
 						}
@@ -1097,21 +1009,19 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'zombies_accept_valid_tax_filter_args'         => array(
 				'query {
 					zombies(
-						where: {
-							filter: {
-								category: {
-									id: {
-										eq: 10
-									},
-									name: {
-										eq: "foo"
-									}
+						filter: {
+							category: {
+								id: {
+									eq: 10
 								},
-								tag: {
-									name: {
-										in: ["foo", "bar"],
-										like: "tst"
-									}
+								name: {
+									eq: "foo"
+								}
+							},
+							tag: {
+								name: {
+									in: ["foo", "bar"],
+									like: "tst"
 								}
 							}
 						}
@@ -1127,21 +1037,19 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'posts_reject_invalid_tax_filter_args'         => array(
 				'query {
 					posts(
-						where: {
-							filter: {
-								category: {
-									id: {
-										eq: "10"
-									},
-									name: {
-										eq: "foo"
-									}
+						filter: {
+							category: {
+								id: {
+									eq: "10"
 								},
-								tag: {
-									name: {
-										in: ["foo", "bar"],
-										like: "tst"
-									}
+								name: {
+									eq: "foo"
+								}
+							},
+							tag: {
+								name: {
+									in: ["foo", "bar"],
+									like: "tst"
 								}
 							}
 						}
@@ -1157,21 +1065,19 @@ class TestFilterQuery extends WP_UnitTestCase {
 			'pages_reject_invalid_tax_filter_args'         => array(
 				'query  {
 					pages(
-						where: {
-							filter: {
-								category: {
-									id: {
-										eq: "10"
-									},
-									name: {
-										eq: "foo"
-									}
+						filter: {
+							category: {
+								id: {
+									eq: "10"
 								},
-								tag: {
-									name: {
-										in: ["foo", "bar"],
-										like: "tst"
-									}
+								name: {
+									eq: "foo"
+								}
+							},
+							tag: {
+								name: {
+									in: ["foo", "bar"],
+									like: "tst"
 								}
 							}
 						}

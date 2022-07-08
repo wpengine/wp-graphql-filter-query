@@ -9,6 +9,7 @@ namespace WPGraphQLFilterQuery;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use WPGraphQL\AppContext;
+use WPGraphQL\Data\Connection\AbstractConnectionResolver;
 
 /**
  * Main class.
@@ -19,17 +20,96 @@ class FilterQuery {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->define_public_hooks();
+		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_fields' ] );
+
+		add_filter( 'graphql_RootQuery_fields', [ $this, 'apply_filters_input' ], 20 );
+		add_filter( 'graphql_connection_query_args', [ $this, 'apply_filter_resolver' ], 10, 2 );
 	}
 
+	/**
+	 * Extend RootQuery
+	 *
+	 * @param array $fields All fields in RootQuery.
+	 *
+	 * @return array
+	 */
+	public function apply_filters_input( array $fields ): array {
+		$post_types = filter_query_get_supported_post_types();
+
+		foreach ( $post_types as &$post_type ) {
+			if ( isset( $fields[ $post_type['plural_name'] ] ) ) {
+				$args = is_array( $fields[ $post_type['plural_name'] ]['args'] ) ? $fields[ $post_type['plural_name'] ]['args'] : [];
+
+				$args['filter'] = [
+					'type'        => 'TaxonomyFilter',
+					'description' => __( 'Filtering Queried Results By Taxonomy Objects', 'wp-graphql-filter-query' ),
+				];
+
+				$fields[ $post_type['plural_name'] ]['args'] = $args;
+			}
+		}
+
+		return $fields;
+	}
 
 	/**
-	 * Define the hooks to register.
+	 * Apply facet filters using graphql_connection_query_args filter hook.
 	 *
-	 * @return void
+	 * @param array                      $query_args Arguments that come from previous filter and will be passed to WP_Query.
+	 * @param AbstractConnectionResolver $connection_resolver Connection resolver.
+	 *
+	 * @return array|mixed
 	 */
-	public function define_public_hooks() {
-		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_fields' ] );
+	public function apply_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
+		$args = $connection_resolver->getArgs();
+
+		if ( empty( $args['filter'] ) ) {
+			return $query_args;
+		}
+
+		$c                 = 0;
+		$operator_mappings = array(
+			'in'      => 'IN',
+			'notIn'   => 'NOT IN',
+			'eq'      => 'IN',
+			'notEq'   => 'NOT IN',
+			'like'    => 'IN',
+			'notLike' => 'NOT IN',
+		);
+
+		foreach ( $args['filter'] as $taxonomy_input => $data ) {
+			foreach ( $data as $field_name => $field_data ) {
+				foreach ( $field_data as $operator => $terms ) {
+					$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
+					$is_like_operator = $this->is_like_operator( $operator );
+					$taxonomy         = $taxonomy_input === 'tag' ? 'post_tag' : 'category';
+
+					$terms = ! $is_like_operator ? $terms : get_terms(
+						array(
+							'name__like' => esc_attr( $terms ),
+							'fields'     => 'ids',
+							'taxonomy'   => $taxonomy,
+						)
+					);
+
+					$result = array(
+						'terms'    => $terms,
+						'taxonomy' => $taxonomy,
+						'operator' => $mapped_operator,
+						'field'    => ( $field_name === 'id' || $is_like_operator ) ? 'term_id' : 'name',
+					);
+
+					$query_args['tax_query'][] = $result;
+					$c++;
+				}
+			}
+		}
+
+		if ( $c > 1 ) {
+			$query_args['tax_query']['relation'] = 'AND';
+		}
+
+		return $query_args;
 	}
 
 	/**
@@ -129,86 +209,6 @@ class FilterQuery {
 				],
 			]
 		);
-
-		$taxonomy_filter_supported_types = filter_query_get_supported_post_types();
-
-		foreach ( $taxonomy_filter_supported_types as &$type ) {
-			$graphql_single_name = $type;
-			register_graphql_field(
-				'RootQueryTo' . $graphql_single_name . 'ConnectionWhereArgs',
-				'filter',
-				[
-					'type'        => 'TaxonomyFilter',
-					'description' => __( 'Filtering Queried Results By Taxonomy Objects', 'wp-graphql-filter-query' ),
-				]
-			);
-		}
-
-		add_filter(
-			'graphql_post_object_connection_query_args',
-			[ $this, 'apply_filters' ],
-			5,
-			10
-		);
-	}
-
-	/**
-	 * Apply facet filters using graphql_post_object_connection_query_args filter hook.
-	 *
-	 * @param array       $query_args arguments that come from previous filter and will be passed to WP_Query.
-	 * @param mixed       $source Not used.
-	 * @param array       $args WPGraphQL input arguments.
-	 * @param AppContext  $context Not used.
-	 * @param ResolveInfo $info Not used.
-	 *
-	 * @return array|mixed
-	 */
-	public function apply_filters( $query_args, $source, $args, $context, $info ) {
-		if ( empty( $args['where']['filter'] ) ) {
-			return $query_args;
-		}
-		$operator_mappings = array(
-			'in'      => 'IN',
-			'notIn'   => 'NOT IN',
-			'eq'      => 'IN',
-			'notEq'   => 'NOT IN',
-			'like'    => 'IN',
-			'notLike' => 'NOT IN',
-		);
-		$c                 = 0;
-		foreach ( $args['where']['filter'] as $taxonomy_input => $data ) {
-			foreach ( $data as $field_name => $field_data ) {
-				foreach ( $field_data as $operator => $terms ) {
-					$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
-					$is_like_operator = $this->is_like_operator( $operator );
-					$taxonomy         = $taxonomy_input === 'tag' ? 'post_tag' : 'category';
-
-					$terms = ! $is_like_operator ? $terms : get_terms(
-						array(
-							'name__like' => esc_attr( $terms ),
-							'fields'     => 'ids',
-							'taxonomy'   => $taxonomy,
-						)
-					);
-
-					$result = array(
-						'terms'    => $terms,
-						'taxonomy' => $taxonomy,
-						'operator' => $mapped_operator,
-						'field'    => ( $field_name === 'id' || $is_like_operator ) ? 'term_id' : 'name',
-					);
-
-					$query_args['tax_query'][] = $result;
-					$c++;
-				}
-			}
-		}
-
-		if ( $c > 1 ) {
-			$query_args['tax_query']['relation'] = 'AND';
-		}
-
-		return $query_args;
 	}
 
 	/**
