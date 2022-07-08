@@ -7,8 +7,6 @@
 
 namespace WPGraphQLFilterQuery;
 
-use GraphQL\Type\Definition\ResolveInfo;
-use WPGraphQL\AppContext;
 use WPGraphQL\Data\Connection\AbstractConnectionResolver;
 
 /**
