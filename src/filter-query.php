@@ -14,6 +14,11 @@ use WPGraphQL\Data\Connection\AbstractConnectionResolver;
  */
 class FilterQuery {
 
+	/**
+	 * Get filter query args.
+	 *
+	 * @var array|null
+	 */
 	public static $query_args = null;
 
 	/**

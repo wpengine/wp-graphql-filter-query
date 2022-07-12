@@ -2,10 +2,6 @@
 
 class TestAggregateQuery extends WP_UnitTestCase {
 	protected function setUp(): void {
-
-		if ( ! defined( 'GRAPHQL_DEBUG' ) ) {
-			define( 'GRAPHQL_DEBUG', true );
-		}
 		register_post_type(
 			'zombie',
 			array(
