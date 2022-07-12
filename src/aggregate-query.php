@@ -61,42 +61,22 @@ class AggregateQuery {
 					'resolve' => function( $root, $args, $context, $info ) {
 						$taxonomy = $info->fieldName;
 
+						$a = FilterQuery::$query_args;
 						if ( $info->fieldName === 'tags' ) {
 							$taxonomy = 'post_tag';
-						}
-
-						if ( $info->fieldName === 'categories' ) {
+						} else if ( $info->fieldName === 'categories' ) {
 							$taxonomy = 'category';
 						}
+
+						$r = new \WP_Query($a);
+						$new_sql = $this->replace_sql_select( $r->request, 'wt.name as \'key\', count(wp_posts.ID) as count' );
+						$new_sql = $this->append_sql_from( $new_sql, 'LEFT JOIN wp_term_taxonomy wtt on wp_term_relationships.term_taxonomy_id = wtt.term_taxonomy_id LEFT JOIN wp_terms wt on wtt.term_id = wt.term_id' );
+						$new_sql = $this->replace_sql_group_by( $new_sql, 'wt.name' );
+						$new_sql = $this->remove_sql_order_by($new_sql);
+
 						global $wpdb;
 
-						// TODO Find a suitable implementation for caching here.
-						//phpcs:disable
-						$results = $wpdb->get_results(
-							$wpdb->prepare(
-								"SELECT terms.name,taxonomy.count
-							FROM {$wpdb->prefix}terms AS terms
-							INNER JOIN {$wpdb->prefix}term_taxonomy
-							AS taxonomy
-							ON (terms.term_id = taxonomy.term_id)
-							WHERE taxonomy = %s AND taxonomy.count > 0;",
-								$taxonomy
-							)
-						);
-
-						$returns = [];
-
-						if ( $results ) {
-							foreach ( $results as $result ) {
-								if ( $results ) {
-									$returns[] = [
-										'key'   => $result->name,
-										'count' => $result->count,
-									];
-								}
-							}
-						}
-						return $returns;
+						return $wpdb->get_results( $new_sql, 'ARRAY_A' );
 					},
 				];
 			}
@@ -127,4 +107,80 @@ class AggregateQuery {
 			);
 		}
 	}
+
+	/**
+	 * @param string $sql Sql string to have select replaced.
+	 * @param string $sql_select_new
+	 *
+	 * @return string Sql with new select clause.
+	 */
+	private function replace_sql_select( string $sql, string $sql_select_new ): string {
+		$sql_select = trim( $this->clause_to_be_modified( $sql, 'SELECT', 'FROM' ) );
+
+		return str_replace( $sql_select, 'SELECT    ' . $sql_select_new, $sql );
+	}
+
+	/**
+	 * @param string $sql Sql string to have select replaced.
+	 * @param string $sql_group_by_new
+	 *
+	 * @return string Sql with new select clause.
+	 */
+	private function replace_sql_group_by( string $sql, string $sql_group_by_new ): string {
+		$sql_select = trim( $this->clause_to_be_modified( $sql, 'GROUP BY', 'ORDER BY' ) );
+
+		return str_replace( $sql_select, 'GROUP BY ' . $sql_group_by_new, $sql );
+	}
+
+	/**
+	 * @param string $sql Sql string to have select replaced.
+	 * @param string $sql_from_new
+	 *
+	 * @return string Sql with new select clause.
+	 */
+	private function append_sql_from( string $sql, string $sql_from_new ): string {
+		$sql_select = trim( $this->clause_to_be_modified( $sql, 'FROM', 'WHERE' ) );
+		$sql_from_new = $sql_select . ' ' . $sql_from_new;
+
+		return str_replace( $sql_select, $sql_from_new, $sql );
+	}
+
+	/**
+	 * @param string $sql Sql string to have order by remnoved
+	 *
+	 * @return string
+	 */
+	private function remove_sql_order_by( string $sql ): string {
+		$sql_order_by = $this->clause_to_be_modified( $sql, 'ORDER', 'LIMIT' );
+
+		return str_replace( $sql_order_by, '', $sql );
+	}
+
+	/**
+	 * @param string $sql Sql string to have select replaced.
+	 * @param string $from
+	 * @param string $to
+	 *
+	 * @return string Sql with new select clause.
+	 */
+	private function clause_to_be_modified( string $sql, string $from = '', string $to = ''): string {
+		$sql_select_with_select_from = $this->extract_substring( $sql, $from, $to, true );
+
+		return str_replace($to, '', $sql_select_with_select_from);
+	}
+
+	/**
+	 * @param string $subject
+	 * @param string $from
+	 * @param string $to
+	 *
+	 * @return string
+	 */
+	private function extract_substring( string $subject, string $from = '', string $to = '', bool $include_from_to = false): string {
+		preg_match("#{$from}(.*?){$to}#s",$subject,$matches);
+
+		return $include_from_to ? ( $matches[0] ?? '' ) : $matches[1] ?? '';
+	}
+
+
 }
