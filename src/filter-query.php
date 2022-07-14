@@ -32,6 +32,7 @@ class FilterQuery {
 		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_fields' ] );
 	}
 
+
 	/**
 	 * Register Nested Input objs.
 	 *
@@ -114,6 +115,23 @@ class FilterQuery {
 		);
 
 		register_graphql_input_type(
+			'TaxonomyFilterWithAndOrWrapper',
+			[
+				'description' => __( 'Taxonomies Where Filtering Supported', 'wp-graphql-filter-query' ),
+				'fields'      => [
+					'tag'      => [
+						'type'        => 'TaxonomyFilterFields',
+						'description' => __( 'Tags Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
+					],
+					'category' => [
+						'type'        => 'TaxonomyFilterFields',
+						'description' => __( 'Category Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
+					],
+				],
+			]
+		);
+
+		register_graphql_input_type(
 			'TaxonomyFilter',
 			[
 				'description' => __( 'Taxonomies Where Filtering Supported', 'wp-graphql-filter-query' ),
@@ -125,6 +143,14 @@ class FilterQuery {
 					'category' => [
 						'type'        => 'TaxonomyFilterFields',
 						'description' => __( 'Category Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
+					],
+					'and' => [
+						'type'        => [ 'list_of' => 'TaxonomyFilterWithAndOrWrapper' ],
+						'description' => __( '\'AND\' Array of Taxonomy Objects Allowable For Filtering', 'wp-graphql-filter-query' ),
+					],
+					'or' => [
+						'type'        => [ 'list_of' => 'TaxonomyFilterWithAndOrWrapper' ],
+						'description' => __( '\'OR\' Array of Taxonomy Objects Allowable For Filterin', 'wp-graphql-filter-query' ),
 					],
 				],
 			]
@@ -176,35 +202,83 @@ class FilterQuery {
 			'notLike' => 'NOT IN',
 		);
 		$c                 = 0;
-		foreach ( $args['where']['filter'] as $taxonomy_input => $data ) {
-			foreach ( $data as $field_name => $field_data ) {
-				foreach ( $field_data as $operator => $terms ) {
-					$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
-					$is_like_operator = $this->is_like_operator( $operator );
-					$taxonomy         = $taxonomy_input === 'tag' ? 'post_tag' : 'category';
+		$nestedAndOrValue  = NULL;
 
-					$terms = ! $is_like_operator ? $terms : get_terms(
-						array(
-							'name__like' => esc_attr( $terms ),
-							'fields'     => 'ids',
-							'taxonomy'   => $taxonomy,
-						)
-					);
+		// handle the root and/or arrays, if present
+		if(array_key_exists('and', $args['where']['filter']) && array_key_exists('or', $args['where']['filter'])){
+			// todo: we can't both and + or so throw err!!!!!!
+		} else {
+			$filter_args_root = $args['where']['filter'];
+			foreach ($filter_args_root as $tax_or_nested_operation => $tax_value_or_op_array ) {
+				if($this->is_nested_operation($tax_or_nested_operation)){
+					foreach ( $tax_value_or_op_array as $tax_array_index => $nested_tax_item ) {
+						foreach ( $nested_tax_item as $nested_tax_key => $nested_tax ) {
+							foreach ( $nested_tax as $field_key => $field_kvp ) {
+								foreach ( $field_kvp as $operator => $terms ) {
+									// todo: abstract this to a new fn - START
+									// fn todo: mapFilter($operator_mappings, $operator, $tax_or_nested_operation, $terms, $field_key, query_args)
+									$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
+									$is_like_operator = $this->is_like_operator( $operator );
+									$taxonomy         = $tax_or_nested_operation === 'tag' ? 'post_tag' : 'category';
+			
+									$terms = ! $is_like_operator ? $terms : get_terms(
+										array(
+											'name__like' => esc_attr( $terms ),
+											'fields'     => 'ids',
+											'taxonomy'   => $taxonomy,
+										)
+									);
+			
+									$result = array(
+										'terms'    => $terms,
+										'taxonomy' => $taxonomy,
+										'operator' => $mapped_operator,
+										'field'    => ( $field_key === 'id' || $is_like_operator ) ? 'term_id' : 'name',
+									);
+			
+									$query_args['tax_query'][] = $result;
+									// todo: abstract this to a new fn - END
+									$c++;
+									$nestedAndOrValue = strtoupper($tax_or_nested_operation);
+								}
+							}
+						}
+					}
+				} else {
+					foreach ( $tax_value_or_op_array as $field_key => $field_kvp ) {
+						foreach ( $field_kvp as $operator => $terms ) {
+							$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
+							$is_like_operator = $this->is_like_operator( $operator );
+							$taxonomy         = $tax_or_nested_operation === 'tag' ? 'post_tag' : 'category';
 
-					$result = array(
-						'terms'    => $terms,
-						'taxonomy' => $taxonomy,
-						'operator' => $mapped_operator,
-						'field'    => ( $field_name === 'id' || $is_like_operator ) ? 'term_id' : 'name',
-					);
+							$terms = ! $is_like_operator ? $terms : get_terms(
+								array(
+									'name__like' => esc_attr( $terms ),
+									'fields'     => 'ids',
+									'taxonomy'   => $taxonomy,
+								)
+							);
 
-					$query_args['tax_query'][] = $result;
-					$c++;
+							$result = array(
+								'terms'    => $terms,
+								'taxonomy' => $taxonomy,
+								'operator' => $mapped_operator,
+								'field'    => ( $field_key === 'id' || $is_like_operator ) ? 'term_id' : 'name',
+							);
+
+							$query_args['tax_query'][] = $result;
+							$c++;
+						}
+					}
 				}
 			}
 		}
 
-		if ( $c > 1 ) {
+		// cascading and/or takes precedence for children until resolved nested and/ors conversation
+		if ( $nestedAndOrValue != NULL ) {
+			$query_args['tax_query']['relation'] = $nestedAndOrValue;
+		}
+		else if($c > 1 ) {
 			$query_args['tax_query']['relation'] = 'AND';
 		}
 
@@ -220,5 +294,16 @@ class FilterQuery {
 	 */
 	private function is_like_operator( string $operator ): bool {
 		return in_array( $operator, [ 'like', 'notLike' ], true );
+	}
+
+	/**
+	 * Checks if filter is a taxonomy or a nested and/or of taxonomies (true if the latter)
+	 *
+	 * @param string $key identifying key of each child arg of filter
+	 *
+	 * @return bool
+	 */
+	public function is_nested_operation( string $key ): bool {
+		return  in_array( $key, [ 'and', 'or' ], true );
 	}
 }
