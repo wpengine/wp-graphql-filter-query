@@ -102,7 +102,7 @@ class AggregateQuery {
 			}
 
 			// store object name in a variable to DRY up code.
-			$aggregate_for_type_name = 'AggregatesFor' . ucfirst( $post_type );
+			$aggregate_for_type_name = 'AggregatesFor' . $post_type['capitalize_name'];
 
 			// finally, register the type.
 			register_graphql_object_type(
@@ -116,7 +116,7 @@ class AggregateQuery {
 			// here we are registering the root `aggregates` field onto each model
 			// that has aggregate fields defined.
 			register_graphql_field(
-				'RootQueryTo' . ucfirst( $post_type ) . 'Connection',
+				'RootQueryTo' . $post_type['capitalize_name'] . 'Connection',
 				'aggregations',
 				[
 					'type'    => $aggregate_for_type_name,

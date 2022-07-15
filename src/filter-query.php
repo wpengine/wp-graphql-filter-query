@@ -7,8 +7,7 @@
 
 namespace WPGraphQLFilterQuery;
 
-use GraphQL\Type\Definition\ResolveInfo;
-use WPGraphQL\AppContext;
+use WPGraphQL\Data\Connection\AbstractConnectionResolver;
 
 /**
  * Main class.
@@ -19,17 +18,144 @@ class FilterQuery {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->define_public_hooks();
+		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_fields' ] );
+
+		add_filter( 'graphql_RootQuery_fields', [ $this, 'apply_filters_input' ], 20 );
+		add_filter( 'graphql_connection_query_args', [ $this, 'apply_filter_resolver' ], 10, 2 );
 	}
 
+	/**
+	 * Extend RootQuery
+	 *
+	 * @param array $fields All fields in RootQuery.
+	 *
+	 * @return array
+	 */
+	public function apply_filters_input( array $fields ): array {
+		$post_types = filter_query_get_supported_post_types();
+
+		foreach ( $post_types as &$post_type ) {
+			if ( isset( $fields[ $post_type['plural_name'] ] ) ) {
+				$args = is_array( $fields[ $post_type['plural_name'] ]['args'] ) ? $fields[ $post_type['plural_name'] ]['args'] : [];
+
+				$args['filter'] = [
+					'type'        => 'TaxonomyFilter',
+					'description' => __( 'Filtering Queried Results By Taxonomy Objects', 'wp-graphql-filter-query' ),
+				];
+
+				$fields[ $post_type['plural_name'] ]['args'] = $args;
+			}
+		}
+
+		return $fields;
+	}
 
 	/**
-	 * Define the hooks to register.
+	 * Apply facet filters using graphql_connection_query_args filter hook.
 	 *
-	 * @return void
+	 * @param array                      $query_args Arguments that come from previous filter and will be passed to WP_Query.
+	 * @param AbstractConnectionResolver $connection_resolver Connection resolver.
+	 *
+	 * @return array|mixed
 	 */
-	public function define_public_hooks() {
-		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_fields' ] );
+	public function apply_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
+		$args = $connection_resolver->getArgs();
+
+		if ( empty( $args['filter'] ) ) {
+			return $query_args;
+		}
+
+		$operator_mappings = array(
+			'in'      => 'IN',
+			'notIn'   => 'NOT IN',
+			'eq'      => 'IN',
+			'notEq'   => 'NOT IN',
+			'like'    => 'IN',
+			'notLike' => 'NOT IN',
+		);
+
+		$c                 = 0;
+		$nestedAndOrValue  = NULL;
+		$filter_args_root = $args['filter'];
+
+		// handle the root and/or arrays, if present
+		if(array_key_exists('and', $filter_args_root) && array_key_exists('or', $filter_args_root)){
+			// todo: we can't both and + or so throw err!!!!!! NOT getting here now... 
+		} else {
+			foreach ($filter_args_root as $tax_or_nested_operation => $tax_value_or_op_array ) {
+				if($this->is_nested_operation($tax_or_nested_operation)){
+					foreach ( $tax_value_or_op_array as $tax_array_index => $nested_tax_item ) {
+						foreach ( $nested_tax_item as $nested_tax_key => $nested_tax ) {
+							foreach ( $nested_tax as $field_key => $field_kvp ) {
+								foreach ( $field_kvp as $operator => $terms ) {
+									// todo: abstract this to a new fn - START
+									// fn todo: mapFilter($operator_mappings, $operator, $tax_or_nested_operation, $terms, $field_key, query_args)
+									$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
+									$is_like_operator = $this->is_like_operator( $operator );
+									$taxonomy         = $tax_or_nested_operation === 'tag' ? 'post_tag' : 'category';
+			
+									$terms = ! $is_like_operator ? $terms : get_terms(
+										array(
+											'name__like' => esc_attr( $terms ),
+											'fields'     => 'ids',
+											'taxonomy'   => $taxonomy,
+										)
+									);
+			
+									$result = array(
+										'terms'    => $terms,
+										'taxonomy' => $taxonomy,
+										'operator' => $mapped_operator,
+										'field'    => ( $field_key === 'id' || $is_like_operator ) ? 'term_id' : 'name',
+									);
+			
+									$query_args['tax_query'][] = $result;
+									// todo: abstract this to a new fn - END
+									$c++;
+									$nestedAndOrValue = strtoupper($tax_or_nested_operation);
+								}
+							}
+						}
+					}
+				} else {
+					foreach ( $tax_value_or_op_array as $field_key => $field_kvp ) {
+						foreach ( $field_kvp as $operator => $terms ) {
+							$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
+							$is_like_operator = $this->is_like_operator( $operator );
+							$taxonomy         = $tax_or_nested_operation === 'tag' ? 'post_tag' : 'category';
+
+							$terms = ! $is_like_operator ? $terms : get_terms(
+								array(
+									'name__like' => esc_attr( $terms ),
+									'fields'     => 'ids',
+									'taxonomy'   => $taxonomy,
+								)
+							);
+
+							$result = array(
+								'terms'    => $terms,
+								'taxonomy' => $taxonomy,
+								'operator' => $mapped_operator,
+								'field'    => ( $field_key === 'id' || $is_like_operator ) ? 'term_id' : 'name',
+							);
+
+							$query_args['tax_query'][] = $result;
+							$c++;
+						}
+					}
+				}
+			}
+		}
+		
+		// cascading and/or takes precedence for children until resolved nested and/ors conversation
+		if ( $nestedAndOrValue != NULL ) {
+			$query_args['tax_query']['relation'] = $nestedAndOrValue;
+		}
+		else if($c > 1 ) {
+			$query_args['tax_query']['relation'] = 'AND';
+		}
+
+		return $query_args;
 	}
 
 
@@ -155,134 +281,6 @@ class FilterQuery {
 				],
 			]
 		);
-
-		$taxonomy_filter_supported_types = filter_query_get_supported_post_types();
-
-		foreach ( $taxonomy_filter_supported_types as &$type ) {
-			$graphql_single_name = $type;
-			register_graphql_field(
-				'RootQueryTo' . $graphql_single_name . 'ConnectionWhereArgs',
-				'filter',
-				[
-					'type'        => 'TaxonomyFilter',
-					'description' => __( 'Filtering Queried Results By Taxonomy Objects', 'wp-graphql-filter-query' ),
-				]
-			);
-		}
-
-		add_filter(
-			'graphql_post_object_connection_query_args',
-			[ $this, 'apply_filters' ],
-			5,
-			10
-		);
-	}
-
-	/**
-	 * Apply facet filters using graphql_post_object_connection_query_args filter hook.
-	 *
-	 * @param array       $query_args arguments that come from previous filter and will be passed to WP_Query.
-	 * @param mixed       $source Not used.
-	 * @param array       $args WPGraphQL input arguments.
-	 * @param AppContext  $context Not used.
-	 * @param ResolveInfo $info Not used.
-	 *
-	 * @return array|mixed
-	 */
-	public function apply_filters( $query_args, $source, $args, $context, $info ) {
-		if ( empty( $args['where']['filter'] ) ) {
-			return $query_args;
-		}
-		$operator_mappings = array(
-			'in'      => 'IN',
-			'notIn'   => 'NOT IN',
-			'eq'      => 'IN',
-			'notEq'   => 'NOT IN',
-			'like'    => 'IN',
-			'notLike' => 'NOT IN',
-		);
-		$c                 = 0;
-		$nestedAndOrValue  = NULL;
-
-		// handle the root and/or arrays, if present
-		if(array_key_exists('and', $args['where']['filter']) && array_key_exists('or', $args['where']['filter'])){
-			// todo: we can't both and + or so throw err!!!!!!
-		} else {
-			$filter_args_root = $args['where']['filter'];
-			foreach ($filter_args_root as $tax_or_nested_operation => $tax_value_or_op_array ) {
-				if($this->is_nested_operation($tax_or_nested_operation)){
-					foreach ( $tax_value_or_op_array as $tax_array_index => $nested_tax_item ) {
-						foreach ( $nested_tax_item as $nested_tax_key => $nested_tax ) {
-							foreach ( $nested_tax as $field_key => $field_kvp ) {
-								foreach ( $field_kvp as $operator => $terms ) {
-									// todo: abstract this to a new fn - START
-									// fn todo: mapFilter($operator_mappings, $operator, $tax_or_nested_operation, $terms, $field_key, query_args)
-									$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
-									$is_like_operator = $this->is_like_operator( $operator );
-									$taxonomy         = $tax_or_nested_operation === 'tag' ? 'post_tag' : 'category';
-			
-									$terms = ! $is_like_operator ? $terms : get_terms(
-										array(
-											'name__like' => esc_attr( $terms ),
-											'fields'     => 'ids',
-											'taxonomy'   => $taxonomy,
-										)
-									);
-			
-									$result = array(
-										'terms'    => $terms,
-										'taxonomy' => $taxonomy,
-										'operator' => $mapped_operator,
-										'field'    => ( $field_key === 'id' || $is_like_operator ) ? 'term_id' : 'name',
-									);
-			
-									$query_args['tax_query'][] = $result;
-									// todo: abstract this to a new fn - END
-									$c++;
-									$nestedAndOrValue = strtoupper($tax_or_nested_operation);
-								}
-							}
-						}
-					}
-				} else {
-					foreach ( $tax_value_or_op_array as $field_key => $field_kvp ) {
-						foreach ( $field_kvp as $operator => $terms ) {
-							$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
-							$is_like_operator = $this->is_like_operator( $operator );
-							$taxonomy         = $tax_or_nested_operation === 'tag' ? 'post_tag' : 'category';
-
-							$terms = ! $is_like_operator ? $terms : get_terms(
-								array(
-									'name__like' => esc_attr( $terms ),
-									'fields'     => 'ids',
-									'taxonomy'   => $taxonomy,
-								)
-							);
-
-							$result = array(
-								'terms'    => $terms,
-								'taxonomy' => $taxonomy,
-								'operator' => $mapped_operator,
-								'field'    => ( $field_key === 'id' || $is_like_operator ) ? 'term_id' : 'name',
-							);
-
-							$query_args['tax_query'][] = $result;
-							$c++;
-						}
-					}
-				}
-			}
-		}
-
-		// cascading and/or takes precedence for children until resolved nested and/ors conversation
-		if ( $nestedAndOrValue != NULL ) {
-			$query_args['tax_query']['relation'] = $nestedAndOrValue;
-		}
-		else if($c > 1 ) {
-			$query_args['tax_query']['relation'] = 'AND';
-		}
-
-		return $query_args;
 	}
 
 	/**
