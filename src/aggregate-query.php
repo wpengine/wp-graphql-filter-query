@@ -74,16 +74,22 @@ class AggregateQuery {
 							ON (terms.term_id = taxonomy.term_id)
 							WHERE taxonomy = %s AND taxonomy.count > 0;";
 						} else {
-							$r   = new \WP_Query( FilterQuery::$query_args );
-							$sql = $this->replace_sql_select( $r->request, "wt.name as 'key', count({$wpdb->prefix}posts.ID) as count" );
-							$sql = $this->handle_sql_from( $sql, $wpdb->prefix );
-							$sql = $this->append_sql_where( $sql, 'AND wt.name IS NOT NULL' );
-							$sql = $this->replace_sql_group_by( $sql, 'wt.name' );
-							$sql = $this->remove_sql_order_by( $sql );
-						}
-						$sql = $wpdb->prepare( $sql, $taxonomy );
+							$r       = new \WP_Query( FilterQuery::$query_args );
+							$sub_sql = $this->remove_sql_group_by( $r->request );
+							$sub_sql = $this->remove_sql_order_by( $sub_sql );
+							$sub_sql = $this->remove_sql_limit( $sub_sql );
 
-						return $wpdb->get_results( $sql, 'ARRAY_A' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+							$sql = "SELECT wt.name as 'key', count({$wpdb->prefix}posts.ID) as count
+							FROM {$wpdb->prefix}posts
+							         LEFT JOIN {$wpdb->prefix}term_relationships ON ({$wpdb->prefix}posts.ID = {$wpdb->prefix}term_relationships.object_id)
+							         LEFT JOIN {$wpdb->prefix}term_taxonomy wtt ON ({$wpdb->prefix}term_relationships.term_taxonomy_id = wtt.term_taxonomy_id AND wtt.taxonomy = %s )
+							         LEFT JOIN {$wpdb->prefix}terms wt ON wtt.term_id = wt.term_id
+							WHERE  wt.name IS NOT NULL AND {$wpdb->prefix}posts.ID = ANY ( {$sub_sql} )
+							GROUP BY wt.name
+							LIMIT 0, 40";
+						}
+
+						return $wpdb->get_results( $wpdb->prepare( $sql, $taxonomy ), 'ARRAY_A' ); //phpcs:disable
 					},
 				];
 			}
@@ -180,6 +186,32 @@ class AggregateQuery {
 	}
 
 	/**
+	 * Remove GROUP BY SQL clause from a WP_Query formatted SQL.
+	 *
+	 * @param string $sql Sql string to have order by removed.
+	 *
+	 * @return string
+	 */
+	private function remove_sql_group_by( string $sql ): string {
+		$sql_order_by = $this->clause_to_be_modified( $sql, 'GROUP BY', 'ORDER BY' );
+
+		return str_replace( $sql_order_by, '', $sql );
+	}
+
+	/**
+	 * Remove LIMIT SQL clause from a WP_Query formatted SQL.
+	 *
+	 * @param string $sql Sql string to have order by removed.
+	 *
+	 * @return string
+	 */
+	private function remove_sql_limit( string $sql ): string {
+		$sql_order_by = $this->clause_to_be_modified( $sql, 'LIMIT', "\n\t\t" );
+
+		return str_replace( $sql_order_by . "\n\t\t", '', $sql );
+	}
+
+	/**
 	 * Remove ORDER BY SQL clause from a WP_Query formatted SQL.
 	 *
 	 * @param string $sql Sql string to have order by removed.
@@ -187,7 +219,7 @@ class AggregateQuery {
 	 * @return string
 	 */
 	private function remove_sql_order_by( string $sql ): string {
-		$sql_order_by = $this->clause_to_be_modified( $sql, 'ORDER', 'LIMIT' );
+		$sql_order_by = $this->clause_to_be_modified( $sql, 'ORDER BY', 'LIMIT' );
 
 		return str_replace( $sql_order_by, '', $sql );
 	}

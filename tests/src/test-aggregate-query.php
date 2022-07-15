@@ -218,7 +218,7 @@ class TestAggregateQuery extends WP_UnitTestCase {
 
 	public function filter_aggregations_data_provider(): array {
 		return [
-			'posts_valid_filter_category_name_eq' => [
+			'posts_valid_filter_category_name_eq'        => [
 				'query {
 					posts(
 						filter: {
@@ -237,9 +237,9 @@ class TestAggregateQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'{"data": { "posts": {"aggregations" : { "categories" : [ { "key" : "animal",  "count" : "2"} ]}}}}',
+				'{"data": { "posts": {"aggregations" : { "categories" : [ { "key" : "animal",  "count" : "2"}, { "key" : "canine",  "count" : "1"}, { "key" : "feline",  "count" : "1"} ]}}}}',
 			],
-			'posts_valid_filter_category_name_in' => [
+			'posts_valid_filter_category_name_in'        => [
 				'query {
 					posts(
 						filter: {
@@ -258,9 +258,9 @@ class TestAggregateQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'{"data": { "posts": {"aggregations" : { "categories" : [ { "key" : "animal",  "count" : "2"}, { "key" : "feline",  "count" : "1"} ]}}}}',
+				'{"data": { "posts": {"aggregations" : { "categories" : [ { "key" : "animal",  "count" : "2"}, { "key" : "canine",  "count" : "1"}, { "key" : "feline",  "count" : "1"} ]}}}}',
 			],
-			'posts_valid_filter_category_name_notEq' => [
+			'posts_valid_filter_category_name_notEq'     => [
 				'query {
 					posts(
 						filter: {
@@ -281,7 +281,7 @@ class TestAggregateQuery extends WP_UnitTestCase {
 				}',
 				'{"data": { "posts": {"aggregations" : { "categories" : []}}}}',
 			],
-			'posts_valid_filter_category_name_notIn' => [
+			'posts_valid_filter_category_name_notIn'     => [
 				'query {
 					posts(
 						filter: {
@@ -322,7 +322,7 @@ class TestAggregateQuery extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'{"data": { "posts": {"aggregations" : { "categories" : [{ "key" : "canine",  "count" : "1"}, { "key" : "animal",  "count" : "1"}]}}}}',
+				'{"data": { "posts": {"aggregations" : { "categories" : [ { "key" : "animal",  "count" : "1"}, { "key" : "canine",  "count" : "1"}]}}}}',
 			],
 		];
 	}
