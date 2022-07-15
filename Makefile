@@ -55,4 +55,4 @@ gbuild-pull-requests:
 		--project="wp-engine-headless-build"
 
 tail-debug-log:
-	$(DC) exec  --rm wp tail -f /var/www/html/wp-content/debug.log
+	$(DC) run -T --rm wp tail -f /var/www/html/wp-content/debug.log

@@ -59,30 +59,29 @@ class AggregateQuery {
 					'type'    => array( 'list_of' => 'BucketItem' ),
 					'resolve' => function ( $root, $args, $context, $info ) {
 						global $wpdb;
-						if ( empty( FilterQuery::$query_args ) ) {
-							$taxonomy = $info->fieldName;
-							if ( $info->fieldName === 'tags' ) {
-								$taxonomy = 'post_tag';
-							} elseif ( $info->fieldName === 'categories' ) {
-								$taxonomy = 'category';
-							}
+						$taxonomy = $info->fieldName;
+						if ( $info->fieldName === 'tags' ) {
+							$taxonomy = 'post_tag';
+						} elseif ( $info->fieldName === 'categories' ) {
+							$taxonomy = 'category';
+						}
 
-							$sql = $wpdb->prepare(
-								"SELECT terms.name as 'key' ,taxonomy.count as count
+						if ( empty( FilterQuery::$query_args ) ) {
+							$sql = "SELECT terms.name as 'key' ,taxonomy.count as count
 							FROM {$wpdb->prefix}terms AS terms
 							INNER JOIN {$wpdb->prefix}term_taxonomy
 							AS taxonomy
 							ON (terms.term_id = taxonomy.term_id)
-							WHERE taxonomy = %s AND taxonomy.count > 0;",
-								$taxonomy
-							);
+							WHERE taxonomy = %s AND taxonomy.count > 0;";
 						} else {
 							$r   = new \WP_Query( FilterQuery::$query_args );
-							$sql = $this->replace_sql_select( $r->request, 'wt.name as \'key\', count(wp_posts.ID) as count' );
-							$sql = $this->append_sql_from( $sql, 'LEFT JOIN wp_term_taxonomy wtt on wp_term_relationships.term_taxonomy_id = wtt.term_taxonomy_id LEFT JOIN wp_terms wt on wtt.term_id = wt.term_id' );
+							$sql = $this->replace_sql_select( $r->request, "wt.name as 'key', count({$wpdb->prefix}posts.ID) as count" );
+							$sql = $this->handle_sql_from( $sql, $wpdb->prefix );
+							$sql = $this->append_sql_where( $sql, 'AND wt.name IS NOT NULL' );
 							$sql = $this->replace_sql_group_by( $sql, 'wt.name' );
 							$sql = $this->remove_sql_order_by( $sql );
 						}
+						$sql = $wpdb->prepare( $sql, $taxonomy );
 
 						return $wpdb->get_results( $sql, 'ARRAY_A' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 					},
@@ -144,19 +143,40 @@ class AggregateQuery {
 		return str_replace( $sql_select, 'GROUP BY ' . $sql_group_by_new, $sql );
 	}
 
+
 	/**
 	 * Append to FROM SQL clause from a WP_Query formatted SQL.
 	 *
 	 * @param string $sql Sql string to have select replaced.
-	 * @param string $sql_from_new New sql string to replace GROUP BY.
+	 * @param string $wpdb_prefix WordPress DB table prefix.
 	 *
 	 * @return string Sql with new select clause.
 	 */
-	private function append_sql_from( string $sql, string $sql_from_new ): string {
-		$sql_select   = trim( $this->clause_to_be_modified( $sql, 'FROM', 'WHERE' ) );
-		$sql_from_new = $sql_select . ' ' . $sql_from_new;
+	private function handle_sql_from( string $sql, string $wpdb_prefix ): string {
+		$sql_from_new = "LEFT JOIN {$wpdb_prefix}term_taxonomy wtt ON ( {$wpdb_prefix}term_relationships.term_taxonomy_id = wtt.term_taxonomy_id AND wtt.taxonomy = %s ) LEFT JOIN {$wpdb_prefix}terms wt ON wtt.term_id = wt.term_id";
 
-		return str_replace( $sql_select, $sql_from_new, $sql );
+		$sql_from = trim( $this->clause_to_be_modified( $sql, 'FROM', 'WHERE' ) );
+		if ( ! str_contains( $sql_from, "LEFT JOIN {$wpdb_prefix}term_relationships" ) ) {
+			$sql_from_new = "LEFT JOIN {$wpdb_prefix}term_relationships ON ({$wpdb_prefix}posts.ID = {$wpdb_prefix}term_relationships.object_id) " . $sql_from_new;
+		}
+		$sql_from_new = $sql_from . ' ' . $sql_from_new;
+
+		return str_replace( $sql_from, $sql_from_new, $sql );
+	}
+
+	/**
+	 * Append to WHERE SQL clause from a WP_Query formatted SQL.
+	 *
+	 * @param string $sql Sql string to have select replaced.
+	 * @param string $sql_where_new New sql string to append WHERE.
+	 *
+	 * @return string Sql with new select clause.
+	 */
+	private function append_sql_where( string $sql, string $sql_where_new ): string {
+		$sql_where     = trim( $this->clause_to_be_modified( $sql, 'WHERE', 'GROUP BY' ) );
+		$sql_where_new = $sql_where . ' ' . $sql_where_new;
+
+		return str_replace( $sql_where, $sql_where_new, $sql );
 	}
 
 	/**

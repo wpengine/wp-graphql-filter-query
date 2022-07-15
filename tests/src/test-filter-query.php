@@ -81,11 +81,6 @@ class TestFilterQuery extends WP_UnitTestCase {
 		$this->assertArrayHasKey( $expected_result_key, $result, json_encode( $result ) );
 
 		if ( $expected_result_key !== 'errors' ) {
-
-			/**
-			 * Seems to be a bug with duplicate values in graphql().
-			 * Till its addressed I will just use remove_dups function
-			 */
 			$this->assertEquals( $expected_result_arr[ $expected_result_key ], $result[ $expected_result_key ] );
 		}
 	}
