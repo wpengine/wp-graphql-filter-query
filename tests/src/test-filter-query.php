@@ -1119,6 +1119,73 @@ class TestFilterQuery extends WP_UnitTestCase {
 				}',
 				'{"errors": null}',
 			),
+			'filter_or_args_should_return_cat'             => array(
+				'query {
+						posts(
+								filter: {
+									or: [
+										{ tag: { name: { eq: "feline" } } }
+									]
+								}
+						) {
+							nodes {
+								title
+							}
+						}
+					}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
+			),
+			'filter_or_args_should_return_cat_and_dog_post' => array(
+				'query {
+						posts(
+								filter: {
+									or: [
+										{ tag: { name: { eq: "feline" } } }
+										{ tag: { name: { eq: "canine" } } }
+									]
+								}
+						) {
+							nodes {
+								title
+							}
+						}
+					}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" },{"title": "cat"}]}}}',
+			),
+			'filter_AND_args_returns_cat_and_dog_for_category_and_tag' => array(
+				'query {
+						posts(
+								filter: {
+									and: [
+										{ tag: { name: { eq: "black" } } }
+										{ category: { name: { eq: "animal" } } }
+									]
+								}
+						) {
+							nodes {
+								title
+							}
+						}
+					}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" },{"title": "cat"}]}}}',
+			),
+			'filter_AND_args_should_NOT_return_for_two_tags' => array(
+				'query {
+						posts(
+								filter: {
+									and: [
+										{ tag: { name: { eq: "feline" } } }
+										{ tag: { name: { eq: "canine" } } }
+									]
+								}
+						) {
+							nodes {
+								title
+							}
+						}
+					}',
+				'{"data": { "posts": {"nodes" : []}}}',
+			),
 		);
 	}
 }
