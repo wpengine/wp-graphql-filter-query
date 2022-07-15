@@ -17,7 +17,7 @@ class TestFilterQuery extends WP_UnitTestCase {
 	private const TAG_BIG_ID_TO_BE_REPLACED         = '{!#%_TAG_BIG_%#!}';
 	private const TAG_SMALL_ID_TO_BE_REPLACED       = '{!#%_TAG_SMALL_%#!}';
 
-	public static function setUpBeforeClass() {
+	public static function setUpBeforeClass(): void {
 		$cat_post_id = wp_insert_post(
 			array(
 				'post_title'   => 'cat',
