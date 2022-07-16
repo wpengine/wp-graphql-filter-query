@@ -116,7 +116,7 @@ class TestFilterQuery extends WP_UnitTestCase {
 
 	public function filters_data_provider(): array {
 		return array(
-			'posts_valid_filter_category_name_eq'          => array(
+			'posts_valid_filter_category_name_eq'          => [
 				'query {
 					posts(
 						filter: {
@@ -134,9 +134,9 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
+			],
 
-			'posts_valid_filter_category_name_in'          => array(
+			'posts_valid_filter_category_name_in'          => [
 				'query {
 					posts(
 						filter: {
@@ -154,8 +154,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_category_name_notEq'       => array(
+			],
+			'posts_valid_filter_category_name_notEq'       => [
 				'query {
 					posts(
 						filter: {
@@ -173,8 +173,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : []}}}',
-			),
-			'posts_valid_filter_category_name_notIn'       => array(
+			],
+			'posts_valid_filter_category_name_notIn'       => [
 				'query {
 					posts(
 						filter: {
@@ -192,8 +192,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_category_name_eq_and_in'   => array(
+			],
+			'posts_valid_filter_category_name_eq_and_in'   => [
 				'query {
 					posts(
 						filter: {
@@ -212,8 +212,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_category_name_notEq_and_in' => array(
+			],
+			'posts_valid_filter_category_name_notEq_and_in' => [
 				'query {
 					posts(
 						filter: {
@@ -232,8 +232,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_category_name_neq_and_notIn' => array(
+			],
+			'posts_valid_filter_category_name_neq_and_notIn' => [
 				'query {
 					posts(
 						filter: {
@@ -252,8 +252,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_category_name_neq_and_notIn_multiple' => array(
+			],
+			'posts_valid_filter_category_name_neq_and_notIn_multiple' => [
 				'query {
 					posts(
 						filter: {
@@ -272,8 +272,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : []}}}',
-			),
-			'posts_valid_filter_category_name_like'        => array(
+			],
+			'posts_valid_filter_category_name_like'        => [
 				'query {
 					posts(
 						filter: {
@@ -291,8 +291,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_category_name_notLike'     => array(
+			],
+			'posts_valid_filter_category_name_notLike'     => [
 				'query {
 					posts(
 						filter: {
@@ -310,8 +310,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_category_name_like_eq'     => array(
+			],
+			'posts_valid_filter_category_name_like_eq'     => [
 				'query {
 					posts(
 						filter: {
@@ -330,8 +330,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_category_name_like_notEq'  => array(
+			],
+			'posts_valid_filter_category_name_like_notEq'  => [
 				'query {
 					posts(
 						filter: {
@@ -350,8 +350,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_category_name_like_in_multiple' => array(
+			],
+			'posts_valid_filter_category_name_like_in_multiple' => [
 				'query {
 					posts(
 						filter: {
@@ -370,8 +370,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_category_name_notLike_in_multiple' => array(
+			],
+			'posts_valid_filter_category_name_notLike_in_multiple' => [
 				'query {
 					posts(
 						filter: {
@@ -390,8 +390,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : []}}}',
-			),
-			'posts_valid_filter_category_name_like_notIn'  => array(
+			],
+			'posts_valid_filter_category_name_like_notIn'  => [
 				'query {
 					posts(
 						filter: {
@@ -410,8 +410,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
-			),
-			'posts_valid_filter_category_id_eq'            => array(
+			],
+			'posts_valid_filter_category_id_eq'            => [
 				'query {
 					posts(
 						filter: {
@@ -429,8 +429,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
-			),
-			'posts_valid_filter_category_id_notEq'         => array(
+			],
+			'posts_valid_filter_category_id_notEq'         => [
 				'query {
 					posts(
 						filter: {
@@ -448,8 +448,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
-			),
-			'posts_valid_filter_category_id_in'            => array(
+			],
+			'posts_valid_filter_category_id_in'            => [
 				'query {
 					posts(
 						filter: {
@@ -467,8 +467,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_category_id_notIn'         => array(
+			],
+			'posts_valid_filter_category_id_notIn'         => [
 				'query {
 					posts(
 						filter: {
@@ -486,8 +486,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_category_name_eq_id_notEq' => array(
+			],
+			'posts_valid_filter_category_name_eq_id_notEq' => [
 				'query {
 					posts(
 						filter: {
@@ -508,8 +508,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
-			),
-			'posts_valid_filter_category_name_eq_id_Eq'    => array(
+			],
+			'posts_valid_filter_category_name_eq_id_Eq'    => [
 				'query {
 					posts(
 						filter: {
@@ -530,8 +530,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_name_eq'               => array(
+			],
+			'posts_valid_filter_tag_name_eq'               => [
 				'query {
 					posts(
 						filter: {
@@ -549,8 +549,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_name_in'               => array(
+			],
+			'posts_valid_filter_tag_name_in'               => [
 				'query {
 					posts(
 						filter: {
@@ -568,8 +568,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_name_notEq'            => array(
+			],
+			'posts_valid_filter_tag_name_notEq'            => [
 				'query {
 					posts(
 						filter: {
@@ -587,8 +587,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : []}}}',
-			),
-			'posts_valid_filter_tag_name_notIn'            => array(
+			],
+			'posts_valid_filter_tag_name_notIn'            => [
 				'query {
 					posts(
 						filter: {
@@ -606,8 +606,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_tag_name_eq_and_in'        => array(
+			],
+			'posts_valid_filter_tag_name_eq_and_in'        => [
 				'query {
 					posts(
 						filter: {
@@ -626,8 +626,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_tag_name_notEq_and_in'     => array(
+			],
+			'posts_valid_filter_tag_name_notEq_and_in'     => [
 				'query {
 					posts(
 						filter: {
@@ -646,8 +646,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_tag_name_neq_and_notIn'    => array(
+			],
+			'posts_valid_filter_tag_name_neq_and_notIn'    => [
 				'query {
 					posts(
 						filter: {
@@ -666,8 +666,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_tag_name_neq_and_notIn_multiple' => array(
+			],
+			'posts_valid_filter_tag_name_neq_and_notIn_multiple' => [
 				'query {
 					posts(
 						filter: {
@@ -686,8 +686,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : []}}}',
-			),
-			'posts_valid_filter_tag_name_like'             => array(
+			],
+			'posts_valid_filter_tag_name_like'             => [
 				'query {
 					posts(
 						filter: {
@@ -705,8 +705,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_name_notLike'          => array(
+			],
+			'posts_valid_filter_tag_name_notLike'          => [
 				'query {
 					posts(
 						filter: {
@@ -724,8 +724,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_tag_name_like_eq'          => array(
+			],
+			'posts_valid_filter_tag_name_like_eq'          => [
 				'query {
 					posts(
 						filter: {
@@ -744,8 +744,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_tag_name_like_notEq'       => array(
+			],
+			'posts_valid_filter_tag_name_like_notEq'       => [
 				'query {
 					posts(
 						filter: {
@@ -764,8 +764,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"} ]}}}',
-			),
-			'posts_valid_filter_tag_name_like_in_multiple' => array(
+			],
+			'posts_valid_filter_tag_name_like_in_multiple' => [
 				'query {
 					posts(
 						filter: {
@@ -784,8 +784,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_name_notLike_in_multiple' => array(
+			],
+			'posts_valid_filter_tag_name_notLike_in_multiple' => [
 				'query {
 					posts(
 						filter: {
@@ -804,8 +804,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : []}}}',
-			),
-			'posts_valid_filter_tag_name_like_notIn'       => array(
+			],
+			'posts_valid_filter_tag_name_like_notIn'       => [
 				'query {
 					posts(
 						filter: {
@@ -824,8 +824,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_id_eq'                 => array(
+			],
+			'posts_valid_filter_tag_id_eq'                 => [
 				'query {
 					posts(
 						filter: {
@@ -843,8 +843,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_id_notEq'              => array(
+			],
+			'posts_valid_filter_tag_id_notEq'              => [
 				'query {
 					posts(
 						filter: {
@@ -862,8 +862,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_id_in'                 => array(
+			],
+			'posts_valid_filter_tag_id_in'                 => [
 				'query {
 					posts(
 						filter: {
@@ -881,8 +881,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_id_notIn'              => array(
+			],
+			'posts_valid_filter_tag_id_notIn'              => [
 				'query {
 					posts(
 						filter: {
@@ -900,8 +900,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_name_eq_id_notEq'      => array(
+			],
+			'posts_valid_filter_tag_name_eq_id_notEq'      => [
 				'query {
 					posts(
 						filter: {
@@ -922,8 +922,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}]}}}',
-			),
-			'posts_valid_filter_tag_name_eq_id_Eq'         => array(
+			],
+			'posts_valid_filter_tag_name_eq_id_Eq'         => [
 				'query {
 					posts(
 						filter: {
@@ -944,8 +944,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
-			),
-			'posts_accept_valid_tax_filter_args'           => array(
+			],
+			'posts_accept_valid_tax_filter_args'           => [
 				'query {
 					posts(
 						filter: {
@@ -972,8 +972,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"nodes" : []}}}',
-			),
-			'pages_accept_valid_tax_filter_args'           => array(
+			],
+			'pages_accept_valid_tax_filter_args'           => [
 				'query {
 					pages(
 						filter: {
@@ -1000,8 +1000,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "pages": {"nodes" : []}}}',
-			),
-			'zombies_accept_valid_tax_filter_args'         => array(
+			],
+			'zombies_accept_valid_tax_filter_args'         => [
 				'query {
 					zombies(
 						filter: {
@@ -1028,8 +1028,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "zombies": {"nodes" : []}}}',
-			),
-			'posts_reject_invalid_tax_filter_args'         => array(
+			],
+			'posts_reject_invalid_tax_filter_args'         => [
 				'query {
 					posts(
 						filter: {
@@ -1056,8 +1056,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"errors": null}',
-			),
-			'pages_reject_invalid_tax_filter_args'         => array(
+			],
+			'pages_reject_invalid_tax_filter_args'         => [
 				'query  {
 					pages(
 						filter: {
@@ -1084,8 +1084,8 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"errors": null}',
-			),
-			'non_filterable_types_reject_all_filter_args'  => array(
+			],
+			'non_filterable_types_reject_all_filter_args'  => [
 				'query  {
 					tags(
 						where: {
@@ -1113,7 +1113,7 @@ class TestFilterQuery extends WP_UnitTestCase {
 					}
 				}',
 				'{"errors": null}',
-			),
+			],
 		);
 	}
 }
