@@ -74,10 +74,10 @@ class AggregateQuery {
 							ON (terms.term_id = taxonomy.term_id)
 							WHERE taxonomy = %s AND taxonomy.count > 0;";
 						} else {
-							$r       = new \WP_Query( FilterQuery::get_query_args() );
-							$sub_sql = $this->remove_sql_group_by( $r->request );
-							$sub_sql = $this->remove_sql_order_by( $sub_sql );
-							$sub_sql = $this->remove_sql_limit( $sub_sql );
+							$query_results = new \WP_Query( FilterQuery::get_query_args() );
+							$sub_sql       = $this->remove_sql_group_by( $query_results->request );
+							$sub_sql       = $this->remove_sql_order_by( $sub_sql );
+							$sub_sql       = $this->remove_sql_limit( $sub_sql );
 
 							$sql = "SELECT wt.name as 'key', count({$wpdb->prefix}posts.ID) as count
 							FROM {$wpdb->prefix}posts
