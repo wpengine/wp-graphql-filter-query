@@ -19,7 +19,7 @@ class FilterQuery {
 	 *
 	 * @var array|null
 	 */
-	public static $query_args = null;
+	protected static $query_args = null;
 
 	/**
 	 * Constructor.
@@ -115,6 +115,15 @@ class FilterQuery {
 		self::$query_args = $query_args;
 
 		return $query_args;
+	}
+
+	/**
+	 * Return query args.
+	 *
+	 * @return array|null
+	 */
+	public static function get_query_args(): ?array {
+		return self::$query_args;
 	}
 
 	/**

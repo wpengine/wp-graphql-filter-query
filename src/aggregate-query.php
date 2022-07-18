@@ -66,7 +66,7 @@ class AggregateQuery {
 							$taxonomy = 'category';
 						}
 
-						if ( empty( FilterQuery::$query_args ) ) {
+						if ( empty( FilterQuery::get_query_args() ) ) {
 							$sql = "SELECT terms.name as 'key' ,taxonomy.count as count
 							FROM {$wpdb->prefix}terms AS terms
 							INNER JOIN {$wpdb->prefix}term_taxonomy
@@ -74,7 +74,7 @@ class AggregateQuery {
 							ON (terms.term_id = taxonomy.term_id)
 							WHERE taxonomy = %s AND taxonomy.count > 0;";
 						} else {
-							$r       = new \WP_Query( FilterQuery::$query_args );
+							$r       = new \WP_Query( FilterQuery::get_query_args() );
 							$sub_sql = $this->remove_sql_group_by( $r->request );
 							$sub_sql = $this->remove_sql_order_by( $sub_sql );
 							$sub_sql = $this->remove_sql_limit( $sub_sql );
@@ -119,70 +119,6 @@ class AggregateQuery {
 				]
 			);
 		}
-	}
-
-	/**
-	 * Replace SELECT SQL clause from a WP_Query formatted SQL.
-	 *
-	 * @param string $sql Sql string to have select replaced.
-	 * @param string $sql_select_new New sql string to replace SELECT.
-	 *
-	 * @return string Sql with new select clause.
-	 */
-	private function replace_sql_select( string $sql, string $sql_select_new ): string {
-		$sql_select = trim( $this->clause_to_be_modified( $sql, 'SELECT', 'FROM' ) );
-
-		return str_replace( $sql_select, 'SELECT    ' . $sql_select_new, $sql );
-	}
-
-	/**
-	 * Replace GROUP BY SQL clause from a WP_Query formatted SQL.
-	 *
-	 * @param string $sql Sql string to have select replaced.
-	 * @param string $sql_group_by_new New sql string to replace GROUP BY.
-	 *
-	 * @return string Sql with new select clause.
-	 */
-	private function replace_sql_group_by( string $sql, string $sql_group_by_new ): string {
-		$sql_select = trim( $this->clause_to_be_modified( $sql, 'GROUP BY', 'ORDER BY' ) );
-
-		return str_replace( $sql_select, 'GROUP BY ' . $sql_group_by_new, $sql );
-	}
-
-
-	/**
-	 * Append to FROM SQL clause from a WP_Query formatted SQL.
-	 *
-	 * @param string $sql Sql string to have select replaced.
-	 * @param string $wpdb_prefix WordPress DB table prefix.
-	 *
-	 * @return string Sql with new select clause.
-	 */
-	private function handle_sql_from( string $sql, string $wpdb_prefix ): string {
-		$sql_from_new = "LEFT JOIN {$wpdb_prefix}term_taxonomy wtt ON ( {$wpdb_prefix}term_relationships.term_taxonomy_id = wtt.term_taxonomy_id AND wtt.taxonomy = %s ) LEFT JOIN {$wpdb_prefix}terms wt ON wtt.term_id = wt.term_id";
-
-		$sql_from = trim( $this->clause_to_be_modified( $sql, 'FROM', 'WHERE' ) );
-		if ( ! str_contains( $sql_from, "LEFT JOIN {$wpdb_prefix}term_relationships" ) ) {
-			$sql_from_new = "LEFT JOIN {$wpdb_prefix}term_relationships ON ({$wpdb_prefix}posts.ID = {$wpdb_prefix}term_relationships.object_id) " . $sql_from_new;
-		}
-		$sql_from_new = $sql_from . ' ' . $sql_from_new;
-
-		return str_replace( $sql_from, $sql_from_new, $sql );
-	}
-
-	/**
-	 * Append to WHERE SQL clause from a WP_Query formatted SQL.
-	 *
-	 * @param string $sql Sql string to have select replaced.
-	 * @param string $sql_where_new New sql string to append WHERE.
-	 *
-	 * @return string Sql with new select clause.
-	 */
-	private function append_sql_where( string $sql, string $sql_where_new ): string {
-		$sql_where     = trim( $this->clause_to_be_modified( $sql, 'WHERE', 'GROUP BY' ) );
-		$sql_where_new = $sql_where . ' ' . $sql_where_new;
-
-		return str_replace( $sql_where, $sql_where_new, $sql );
 	}
 
 	/**
@@ -258,6 +194,4 @@ class AggregateQuery {
 
 		return $include_from_to ? ( $matches[0] ?? '' ) : $matches[1] ?? '';
 	}
-
-
 }
