@@ -2,6 +2,7 @@
 
 WP_REQUIRED_PLUGINS="wp-graphql query-monitor"
 
+echo "Downloading Wordpress core ..."
 wp core download
 
 if ! $(wp core is-installed); then

@@ -15,6 +15,13 @@ use WPGraphQL\Data\Connection\AbstractConnectionResolver;
 class FilterQuery {
 
 	/**
+	 * Get filter query args.
+	 *
+	 * @var array|null
+	 */
+	protected static $query_args = null;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -64,8 +71,6 @@ class FilterQuery {
 		if ( empty( $args['filter'] ) ) {
 			return $query_args;
 		}
-
-		$c                 = 0;
 		$operator_mappings = array(
 			'in'      => 'IN',
 			'notIn'   => 'NOT IN',
@@ -74,7 +79,7 @@ class FilterQuery {
 			'like'    => 'IN',
 			'notLike' => 'NOT IN',
 		);
-
+		$c                 = 0;
 		foreach ( $args['filter'] as $taxonomy_input => $data ) {
 			foreach ( $data as $field_name => $field_data ) {
 				foreach ( $field_data as $operator => $terms ) {
@@ -107,7 +112,18 @@ class FilterQuery {
 			$query_args['tax_query']['relation'] = 'AND';
 		}
 
+		self::$query_args = $query_args;
+
 		return $query_args;
+	}
+
+	/**
+	 * Return query args.
+	 *
+	 * @return array|null
+	 */
+	public static function get_query_args(): ?array {
+		return self::$query_args;
 	}
 
 	/**
