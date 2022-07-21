@@ -30,11 +30,11 @@ function filter_query_get_supported_post_types(): array {
 	$built_ins    = [ 'post', 'page' ];
 	$type_objects = array();
 
- 	$cpt_type_names = get_post_types(
+	$cpt_type_names = get_post_types(
 		[
 			'public'          => true,
 			'_builtin'        => false,
-			'show_in_graphql' => true
+			'show_in_graphql' => true,
 		],
 		'names'
 	);

@@ -61,22 +61,22 @@ class Wp_GraphqlFilterQueryTest extends WP_UnitTestCase {
 			'post'    => [
 				'name'            => 'post',
 				'capitalize_name' => 'Post',
-				'plural_name'     => 'posts'
+				'plural_name'     => 'posts',
 			],
 			'page'    => [
 				'name'            => 'page',
 				'capitalize_name' => 'Page',
-				'plural_name'     => 'pages'
+				'plural_name'     => 'pages',
 			],
 			'zombie'  => [
 				'name'            => 'zombie',
 				'capitalize_name' => 'Zombie',
-				'plural_name'     => 'zombies'
+				'plural_name'     => 'zombies',
 			],
 			'vampire' => [
 				'name'            => 'vampire',
 				'capitalize_name' => 'Vampire',
-				'plural_name'     => 'vampires'
+				'plural_name'     => 'vampires',
 			],
 		];
 		$this->assertEquals( $expected_types, $post_types );
