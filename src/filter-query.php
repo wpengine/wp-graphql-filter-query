@@ -61,7 +61,7 @@ class FilterQuery {
 
 	public $TAXONOMY_KEYS = ['tag','category'];
 	public $NESTING_RELATION_KEYS = ['and','or'];
-	public $MAX_FILTER_DEPTH = 10;
+	public $MAX_NESTING_DEPTH = 10;
 	public $wpQuery = 10;
 	public $filterObjCounter = 0;
 
@@ -75,6 +75,9 @@ class FilterQuery {
 	 * @return bool
 	 */
 	private function resolveTaxonomy(array $filterObj, int $depth): array {
+		if($depth > $this->MAX_NESTING_DEPTH){
+			return null;
+		}
 		$tempQuery = [];
 		foreach ($filterObj as $rootObjKey => $value) {
 			$this->filterObjCounter++;
@@ -105,7 +108,7 @@ class FilterQuery {
 					}
 				}
 			}
-			else if(in_array($rootObjKey, $this->NESTING_RELATION_KEYS) && $depth < ($this->MAX_FILTER_DEPTH-1)){
+			else if(in_array($rootObjKey, $this->NESTING_RELATION_KEYS)){
 				$nestedObjArray = $value;
 				$wpQueryArray = [];
 				
