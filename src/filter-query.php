@@ -98,9 +98,9 @@ class FilterQuery {
 	 * @param array $filter_obj A Filter object, for wpQuery access, to build upon within each recursive call.
 	 * @param int   $depth A depth-counter to track recusrive call depth.
 	 *
-	 * @throws Exception Throws max nested filter depth exception, caught by wpgraphql response.
-	 * @throws Exception Throws and/or not allowed as siblings exception, caught by wpgraphql response.
-	 * @throws Exception Throws empty relation (and/or) exception, caught by wpgraphql response.
+	 * @throws \Exception Throws max nested filter depth exception, caught by wpgraphql response.
+	 * @throws \Exception Throws and/or not allowed as siblings exception, caught by wpgraphql response.
+	 * @throws \Exception Throws empty relation (and/or) exception, caught by wpgraphql response.
 	 * @return array
 	 */
 	private function resolve_taxonomy( array $filter_obj, int $depth ): array {
@@ -163,7 +163,7 @@ class FilterQuery {
 	 * @param AbstractConnectionResolver $connection_resolver Connection resolver.
 	 *
 	 * @return array
-	 * @throws Exception Throws empty filter exception, caught by wpgraphql response.
+	 * @throws \Exception Throws empty filter exception, caught by wpgraphql response.
 	 */
 	public function apply_recursive_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
 		$args = $connection_resolver->getArgs();
