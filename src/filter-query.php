@@ -110,12 +110,21 @@ class FilterQuery {
 				$attribute_array = $value;
 				foreach ( $attribute_array as $field_key => $field_kvp ) {
 					foreach ( $field_kvp as $operator => $terms ) {
-						$mapped_operator = $this->operator_mappings[ $operator ] ?? 'IN';
-						$taxonomy        = $root_obj_key === 'tag' ? 'post_tag' : 'category';
+						$mapped_operator  = $this->operator_mappings[ $operator ] ?? 'IN';
+						$is_like_operator = $this->is_like_operator( $operator );
+						$taxonomy         = $root_obj_key === 'tag' ? 'post_tag' : 'category';
+
+						$terms = ! $is_like_operator ? $terms : get_terms(
+							array(
+								'taxonomy'   => $taxonomy,
+								'fields'     => 'ids',
+								'name__like' => esc_attr( $terms ),
+							)
+						);
 
 						$result = array(
 							'taxonomy' => $taxonomy,
-							'field'    => ( $field_key === 'id' ) ? 'term_id' : 'name',
+							'field'    => ( $field_key === 'id' ) || $is_like_operator ? 'term_id' : 'name',
 							'terms'    => $terms,
 							'operator' => $mapped_operator,
 						);
@@ -278,6 +287,17 @@ class FilterQuery {
 				],
 			]
 		);
+	}
+
+	/**
+	 * Check if operator is in or notIn
+	 *
+	 * @param string $operator Received operator - not mapped.
+	 *
+	 * @return bool
+	 */
+	private function is_like_operator( string $operator ): bool {
+		return in_array( $operator, [ 'like', 'notLike' ], true );
 	}
 
 	/**
