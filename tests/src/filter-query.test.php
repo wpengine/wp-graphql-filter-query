@@ -1116,86 +1116,308 @@ class FilterQueryTest extends WP_UnitTestCase {
 			],
 			'OR_with_one_condition_should_return_cat'      => [
 				'query {
-						posts(
-								filter: {
-									or: [
-										{ tag: { name: { eq: "feline" } } }
-									]
-								}
-						) {
-							nodes {
-								title
-							}
+					posts(
+						filter: {
+							or: [
+								{ tag: { name: { eq: "small" } } }
+							]
 						}
-					}',
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
 			],
 			'OR_with_two_conditions_should_return_cat_and_dog' => [
 				'query {
-						posts(
-								filter: {
-									or: [
-										{ tag: { name: { eq: "feline" } } }
-										{ tag: { name: { eq: "canine" } } }
-									]
-								}
-						) {
-							nodes {
-								title
-							}
+					posts(
+						filter: {
+							or: [
+								{ category: { name: { eq: "feline" } } }
+								{ category: { name: { eq: "canine" } } }
+							]
 						}
-					}',
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" },{"title": "cat"}]}}}',
+			],
+			'OR_with_two_nested_AND_one_root_condition_should_return_cat' => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{ category: { name: { eq: "feline" } } }
+								{ category: { name: { eq: "canine" } } }
+							]
+							tag: { name: { eq: "small" } }
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
 			],
 			'AND_with_one_condition_should_return_cat'     => [
 				'query {
-						posts(
-								filter: {
-									and: [
-										{ tag: { name: { eq: "feline" } } }
-									]
-								}
-						) {
-							nodes {
-								title
-							}
+					posts(
+						filter: {
+							and: [
+								{ tag: { name: { eq: "small" } } }
+							]
 						}
-					}',
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
 				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
 			],
-			'AND_with_two_separate_taxonomy_conditions_should_return_cat_and_dog' => [
+			'AND_with_two_separate_conditions_should_return_cat_and_dog' => [
 				'query {
-						posts(
-								filter: {
-									and: [
-										{ tag: { name: { eq: "black" } } }
-										{ category: { name: { eq: "animal" } } }
-									]
-								}
-						) {
-							nodes {
-								title
-							}
+					posts(
+						filter: {
+							and: [
+								{ tag: { name: { eq: "black" } } }
+								{ category: { name: { eq: "animal" } } }
+							]
 						}
-					}',
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" },{"title": "cat"}]}}}',
 			],
-			'AND_with_two_conditions_should_not_return_results' => [
+			'AND_with_one_nested_AND_one_root_condition_should_return_cat' => [
 				'query {
-						posts(
-								filter: {
-									and: [
-										{ tag: { name: { eq: "feline" } } }
-										{ tag: { name: { eq: "canine" } } }
-									]
-								}
-						) {
-							nodes {
-								title
-							}
+					posts(
+						filter: {
+							and: [
+								{ category: { name: { eq: "feline" } } }
+							]
+							tag: { name: { eq: "small" } }
 						}
-					}',
-				'{"data": { "posts": {"nodes" : []}}}',
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
+			],
+			'AND_OR_with_both_relations_should_return_error' => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{ tag: { name: { eq: "small" } } }
+							]
+							and: [
+								{ category: { name: { eq: "feline" } } }
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"errors": null}',
+			],
+			'AND_with_no_children_should_return_error'     => [
+				'query {
+					posts(
+						filter: {
+							and: []
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"errors": null}',
+			],
+			'OR_with_nesting_gt_10_should_return_error'    => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{
+									or: [
+										{
+											or: [
+												{
+													or: [
+														{
+															or: [
+																{
+																	or: [
+																		{
+																			or: [
+																				{
+																					or: [
+																						{
+																							or: [
+																								{
+																									or: [
+																										{
+																											tag: {
+																												name: {eq: "small"}
+																											}
+																										},
+																										{
+																											category: {
+																												name: {eq: "feline"}
+																											}
+																										}
+																									]
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"errors": null}',
+			],
+			'OR_with_nesting_lt_10_should_return_cat'      => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{
+									or: [
+										{
+											or: [
+												{
+													or: [
+														{
+															or: [
+																{
+																	or: [
+																		{
+																			or: [
+																				{
+																					or: [
+																						{
+																							or: [
+																								{
+																									tag: {
+																										name: {eq: "small"}
+																									}
+																								},
+																								{
+																									category: {
+																										name: {eq: "feline"}
+																									}
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
+			],
+			'OR_nested_with_one_root_AND_condition_should_return_cat' => [
+				'query {
+					posts(
+						filter: {
+							tag: { name: { eq: "small" } }
+							or: [
+								{
+									or: [
+										{
+											or: [
+												{
+													or: [
+														{
+															or: [
+																{
+																	or: [
+																		{
+																			or: [
+																				{
+																					or: [
+																						{
+																							or: [
+																								{
+																									category: {
+																										name: {eq: "feline"}
+																									}
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
 			],
 		);
 	}
