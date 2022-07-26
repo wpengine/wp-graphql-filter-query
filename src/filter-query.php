@@ -159,7 +159,12 @@ class FilterQuery {
 	 * @return array
 	 */
 	public function apply_recursive_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
-		$args             = $connection_resolver->getArgs();
+		$args = $connection_resolver->getArgs();
+
+		if ( empty( $args['filter'] ) ) {
+			return $query_args;
+		}
+
 		$filter_args_root = $args['filter'];
 
 		if ( empty( $filter_args_root ) ) {
