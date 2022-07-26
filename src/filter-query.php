@@ -15,6 +15,13 @@ use WPGraphQL\Data\Connection\AbstractConnectionResolver;
 class FilterQuery {
 
 	/**
+	 * Get filter query args.
+	 *
+	 * @var array|null
+	 */
+	protected static $query_args = null;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -153,8 +160,19 @@ class FilterQuery {
 		}
 
 		$query_args['tax_query'][] = $this->resolve_taxonomy( $filter_args_root, 0, [] );
+
+		self::$query_args = $query_args;
 		return $query_args;
 	}
+	/**
+	 * Return query args.
+	 *
+	 * @return array|null
+	 */
+	public static function get_query_args(): ?array {
+		return self::$query_args;
+	}
+
 	/**
 	 * Register Nested Input objs.
 	 *

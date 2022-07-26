@@ -32,8 +32,9 @@ function filter_query_get_supported_post_types(): array {
 
 	$cpt_type_names = get_post_types(
 		[
-			'public'   => true,
-			'_builtin' => false,
+			'public'          => true,
+			'_builtin'        => false,
+			'show_in_graphql' => true,
 		],
 		'names'
 	);

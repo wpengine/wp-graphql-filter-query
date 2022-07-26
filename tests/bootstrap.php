@@ -8,6 +8,10 @@
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
+if ( ! defined( 'GRAPHQL_DEBUG' ) ) {
+	define( 'GRAPHQL_DEBUG', true );
+}
+
 if ( ! $_tests_dir ) {
 	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
 }
