@@ -142,9 +142,10 @@ class AggregateQuery {
 	 * @return string
 	 */
 	private function remove_sql_limit( string $sql ): string {
-		$sql_order_by = $this->clause_to_be_modified( $sql, 'LIMIT', "\n\t\t" );
+		preg_match( "#LIMIT(.*?)$#s", $sql, $matches );
+		$limit = $matches[0] ?? '';
 
-		return str_replace( $sql_order_by . "\n\t\t", '', $sql );
+		return str_replace( $limit , '', $sql );
 	}
 
 	/**
