@@ -65,6 +65,27 @@ class FilterQueryTest extends WP_UnitTestCase {
 		);
 	}
 
+	public function test_throws_error_when_and_or_present_as_siblings() {
+		$query =
+			'query {
+				posts(
+					filter: {
+						or: [ { category: { name: { eq: "animal" } } ],
+						and: [ { category: { name: { eq: "animal" } } ],
+					}
+				) {
+					nodes {
+						title
+						content
+					}
+				}
+			}';
+
+		$result = graphql( array( 'query' => $query ) );
+
+		$this->assertEquals( [ 'error' => 'some error' ], $result );
+	}
+
 	/**
 	 * @dataProvider  filters_data_provider
 	 *
