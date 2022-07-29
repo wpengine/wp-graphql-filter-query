@@ -65,25 +65,129 @@ class FilterQueryTest extends WP_UnitTestCase {
 		);
 	}
 
-	public function test_throws_error_when_and_or_present_as_siblings() {
-		$query =
-			'query {
-				posts(
-					filter: {
-						or: [ { category: { name: { eq: "animal" } } ],
-						and: [ { category: { name: { eq: "animal" } } ],
-					}
-				) {
-					nodes {
-						title
-						content
-					}
-				}
-			}';
-
+	/**
+	 * @dataProvider  filter_errors_data_provider
+	 *
+	 * @param string $query GraphQL query to test.
+	 * @param string $expected_error What the error object of query return should be.
+	 * @throws Exception
+	 */
+	public function test_schema_errors_for_filters( string $query, string $expected_error ) {
+		$query  = $this->replace_ids( $query );
 		$result = graphql( array( 'query' => $query ) );
+		$this->assertEquals( $expected_error, $result['errors'][0]['message'] );
+	}
 
-		$this->assertEquals( [ 'error' => 'some error' ], $result );
+	public function filter_errors_data_provider(): array {
+		return array(
+			'and_plus_or_as_siblings_returns_error'      => [
+				'query {
+					posts(
+						filter: {
+							or: [],
+							and: [],
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'A Filter can only accept one of an \'and\' or \'or\' child relation as an immediate child.',
+			],
+			'empty_filter_or_returns_error'              => [
+				'query {
+					posts(
+						filter: {
+							or: [],
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.',
+			],
+			'empty_filter_and_returns_error'             => [
+				'query {
+					posts(
+						filter: {
+							and: [],
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.',
+			],
+			'relation_nesting_gt_10_should_return_error' => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{
+									or: [
+										{
+											or: [
+												{
+													or: [
+														{
+															or: [
+																{
+																	or: [
+																		{
+																			or: [
+																				{
+																					or: [
+																						{
+																							or: [
+																								{
+																									or: [
+																										{
+																											tag: {
+																												name: {eq: "small"}
+																											}
+																										},
+																										{
+																											category: {
+																												name: {eq: "feline"}
+																											}
+																										}
+																									]
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (10) depth to proceed',
+			],
+		);
 	}
 
 	/**

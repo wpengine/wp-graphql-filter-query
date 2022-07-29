@@ -98,16 +98,16 @@ class FilterQuery {
 	 * @param array $filter_obj A Filter object, for wpQuery access, to build upon within each recursive call.
 	 * @param int   $depth A depth-counter to track recusrive call depth.
 	 *
-	 * @throws \Exception Throws max nested filter depth exception, caught by wpgraphql response.
-	 * @throws \Exception Throws and/or not allowed as siblings exception, caught by wpgraphql response.
-	 * @throws \Exception Throws empty relation (and/or) exception, caught by wpgraphql response.
+	 * @throws FilterException Throws max nested filter depth exception, caught by wpgraphql response.
+	 * @throws FilterException Throws and/or not allowed as siblings exception, caught by wpgraphql response.
+	 * @throws FilterException Throws empty relation (and/or) exception, caught by wpgraphql response.
 	 * @return array
 	 */
 	private function resolve_taxonomy( array $filter_obj, int $depth ): array {
 		if ( $depth > $this->max_nesting_depth ) {
-			throw new \Exception( 'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (10) depth to proceed' );
+			throw new FilterException( 'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (10) depth to proceed' );
 		} elseif ( array_key_exists( 'and', $filter_obj ) && array_key_exists( 'or', $filter_obj ) ) {
-			throw new \Exception( 'A Filter can only accept one of an \'and\' or \'or\' child relation as an immediate child.' );
+			throw new FilterException( 'A Filter can only accept one of an \'and\' or \'or\' child relation as an immediate child.' );
 		}
 
 		$temp_query = [];
@@ -143,7 +143,7 @@ class FilterQuery {
 				$wp_query_array   = [];
 
 				if ( count( $nested_obj_array ) === 0 ) {
-					throw new \Exception( 'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.' );
+					throw new FilterException( 'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.' );
 				}
 				foreach ( $nested_obj_array as $nested_obj_index => $nested_obj_value ) {
 					$wp_query_array[ $nested_obj_index ]             = $this->resolve_taxonomy( $nested_obj_value, ++$depth );
@@ -163,7 +163,7 @@ class FilterQuery {
 	 * @param AbstractConnectionResolver $connection_resolver Connection resolver.
 	 *
 	 * @return array
-	 * @throws \Exception Throws empty filter exception, caught by wpgraphql response.
+	 * @throws FilterException Throws empty filter exception, caught by wpgraphql response.
 	 */
 	public function apply_recursive_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
 		$args = $connection_resolver->getArgs();
@@ -173,10 +173,6 @@ class FilterQuery {
 		}
 
 		$filter_args_root = $args['filter'];
-
-		if ( empty( $filter_args_root ) ) {
-			throw new \Exception( 'The Filter specified has no children. Please remove filter or add an appropriate taxonomy or relation key to proceed.' );
-		}
 
 		$query_args['tax_query'][] = $this->resolve_taxonomy( $filter_args_root, 0, [] );
 
