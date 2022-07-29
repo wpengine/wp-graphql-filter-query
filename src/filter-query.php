@@ -163,7 +163,6 @@ class FilterQuery {
 	 * @param AbstractConnectionResolver $connection_resolver Connection resolver.
 	 *
 	 * @return array
-	 * @throws FilterException Throws empty filter exception, caught by wpgraphql response.
 	 */
 	public function apply_recursive_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
 		$args = $connection_resolver->getArgs();
