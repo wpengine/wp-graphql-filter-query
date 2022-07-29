@@ -296,7 +296,7 @@ class FilterQuery {
 	}
 
 	/**
-	 * Check if operator like in or notLike
+	 * Check if operator like or notLike
 	 *
 	 * @param string $operator Received operator - not mapped.
 	 *
