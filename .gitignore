@@ -1,5 +1,6 @@
 vendor/*
 !vendor/composer
+!vendor/symfony
 !vendor/autoload.php
 
 .idea/
