@@ -4,7 +4,7 @@
  * The plugin public information
  *
  * @link              https://developers.wpengine.com/
- * @since             1.0.0
+ * @since             0.1.0
  * @package           WPGraphqlFilterQuery
  *
  * @wordpress-plugin
