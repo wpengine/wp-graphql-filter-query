@@ -121,19 +121,19 @@ class FilterQuery {
 						$taxonomy         = $root_obj_key === 'tag' ? 'post_tag' : 'category';
 
 						$terms = ! $is_like_operator ? $terms : get_terms(
-							array(
+							[
 								'taxonomy'   => $taxonomy,
 								'fields'     => 'ids',
 								'name__like' => esc_attr( $terms ),
-							)
+							]
 						);
 
-						$result = array(
+						$result = [
 							'taxonomy' => $taxonomy,
 							'field'    => ( $field_key === 'id' ) || $is_like_operator ? 'term_id' : 'name',
 							'terms'    => $terms,
 							'operator' => $mapped_operator,
-						);
+						];
 
 						$temp_query[] = $result;
 					}
@@ -300,7 +300,7 @@ class FilterQuery {
 	}
 
 	/**
-	 * Check if operator is in or notIn
+	 * Check if operator like in or notLike
 	 *
 	 * @param string $operator Received operator - not mapped.
 	 *
@@ -308,16 +308,5 @@ class FilterQuery {
 	 */
 	private function is_like_operator( string $operator ): bool {
 		return in_array( $operator, [ 'like', 'notLike' ], true );
-	}
-
-	/**
-	 * Checks if filter is a taxonomy or a nested and/or of taxonomies (true if the latter)
-	 *
-	 * @param string $key identifying key of each child arg of filter.
-	 *
-	 * @return bool
-	 */
-	public function is_nested_operation( string $key ): bool {
-		return in_array( $key, [ 'and', 'or' ], true );
 	}
 }

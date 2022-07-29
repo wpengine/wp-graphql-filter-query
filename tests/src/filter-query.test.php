@@ -1194,9 +1194,15 @@ class FilterQueryTest extends WP_UnitTestCase {
 						nodes {
 							title
 						}
+						aggregations {
+							categories {
+								key
+								count
+							}
+						}
 					}
 				}',
-				'{"data": { "posts": {"nodes" : [{"title": "dog" },{"title": "cat"}]}}}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" },{"title": "cat"}], "aggregations" : { "categories" : [ { "key" : "animal",  "count" : "2"}, { "key" : "canine",  "count" : "1"}, { "key" : "feline",  "count" : "1"}]}}}}',
 			],
 			'AND_with_one_nested_AND_one_root_condition_should_return_cat' => [
 				'query {
@@ -1211,9 +1217,15 @@ class FilterQueryTest extends WP_UnitTestCase {
 						nodes {
 							title
 						}
+						aggregations {
+							categories {
+								key
+								count
+							}
+						}
 					}
 				}',
-				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
+				'{"data": { "posts": {"aggregations" : { "categories" : [ { "key" : "animal",  "count" : "1"}, { "key" : "feline",  "count" : "1"}]}, "nodes" : [{"title": "cat"}]}}}',
 			],
 			'AND_OR_with_both_relations_should_return_error' => [
 				'query {
