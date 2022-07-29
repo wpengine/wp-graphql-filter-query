@@ -1,15 +1,24 @@
 <?php
 /**
- * Plugin Name:     Wp Graphql Filter Query
- * Plugin URI:      PLUGIN SITE HERE
- * Description:     PLUGIN DESCRIPTION HERE
- * Author:          YOUR NAME HERE
- * Author URI:      YOUR SITE HERE
- * Text Domain:     wp-graphql-filter-query
- * Domain Path:     /languages
- * Version:         0.1.0
  *
- * @package         WPGraphqlFilterQuery
+ * The plugin public information
+ *
+ * @link              https://developers.wpengine.com/
+ * @since             0.1.0
+ * @package           WPGraphqlFilterQuery
+ *
+ * @wordpress-plugin
+ * Plugin Name:       WPGraphQL Filter Query
+ * Plugin URI:        https://developers.wpengine.com/
+ * Description:       Adds taxonomy filtering and aggregation support to WPGraphQL
+ * Version:           0.1.0
+ * Author:            WP Engine
+ * Author URI:        https://wpengine.com/
+ * Requires PHP:      7.4
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       wp-graphql-filter-query
+ * Domain Path:       /languages
  */
 
 use WPGraphQLFilterQuery\AggregateQuery;
