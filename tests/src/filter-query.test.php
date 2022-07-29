@@ -17,7 +17,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 	private const TAG_BIG_ID_TO_BE_REPLACED         = '{!#%_TAG_BIG_%#!}';
 	private const TAG_SMALL_ID_TO_BE_REPLACED       = '{!#%_TAG_SMALL_%#!}';
 
-	public static function setUpBeforeClass() {
+	public static function setUpBeforeClass(): void {
 		$cat_post_id = wp_insert_post(
 			array(
 				'post_title'   => 'cat',
@@ -62,6 +62,131 @@ class FilterQueryTest extends WP_UnitTestCase {
 				'graphql_single_name' => 'zombie',
 				'graphql_plural_name' => 'zombies',
 			)
+		);
+	}
+
+	/**
+	 * @dataProvider  filter_errors_data_provider
+	 *
+	 * @param string $query GraphQL query to test.
+	 * @param string $expected_error What the error object of query return should be.
+	 * @throws Exception
+	 */
+	public function test_schema_errors_for_filters( string $query, string $expected_error ) {
+		$query  = $this->replace_ids( $query );
+		$result = graphql( array( 'query' => $query ) );
+		$this->assertEquals( $expected_error, $result['errors'][0]['message'] );
+	}
+
+	public function filter_errors_data_provider(): array {
+		return array(
+			'and_plus_or_as_siblings_returns_error'      => [
+				'query {
+					posts(
+						filter: {
+							or: [],
+							and: [],
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'A Filter can only accept one of an \'and\' or \'or\' child relation as an immediate child.',
+			],
+			'empty_filter_or_returns_error'              => [
+				'query {
+					posts(
+						filter: {
+							or: [],
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.',
+			],
+			'empty_filter_and_returns_error'             => [
+				'query {
+					posts(
+						filter: {
+							and: [],
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.',
+			],
+			'relation_nesting_gt_10_should_return_error' => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{
+									or: [
+										{
+											or: [
+												{
+													or: [
+														{
+															or: [
+																{
+																	or: [
+																		{
+																			or: [
+																				{
+																					or: [
+																						{
+																							or: [
+																								{
+																									or: [
+																										{
+																											tag: {
+																												name: {eq: "small"}
+																											}
+																										},
+																										{
+																											category: {
+																												name: {eq: "feline"}
+																											}
+																										}
+																									]
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (10) depth to proceed',
+			],
 		);
 	}
 
@@ -1113,6 +1238,323 @@ class FilterQueryTest extends WP_UnitTestCase {
 					}
 				}',
 				'{"errors": null}',
+			],
+			'OR_with_one_condition_should_return_cat'      => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{ tag: { name: { eq: "small" } } }
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
+			],
+			'OR_with_two_conditions_should_return_cat_and_dog' => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{ category: { name: { eq: "feline" } } }
+								{ category: { name: { eq: "canine" } } }
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" },{"title": "cat"}]}}}',
+			],
+			'OR_with_two_nested_AND_one_root_condition_should_return_cat' => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{ category: { name: { eq: "feline" } } }
+								{ category: { name: { eq: "canine" } } }
+							]
+							tag: { name: { eq: "small" } }
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
+			],
+			'AND_with_one_condition_should_return_cat'     => [
+				'query {
+					posts(
+						filter: {
+							and: [
+								{ tag: { name: { eq: "small" } } }
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
+			],
+			'AND_with_two_separate_conditions_should_return_cat_and_dog' => [
+				'query {
+					posts(
+						filter: {
+							and: [
+								{ tag: { name: { eq: "black" } } }
+								{ category: { name: { eq: "animal" } } }
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+						aggregations {
+							categories {
+								key
+								count
+							}
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "dog" },{"title": "cat"}], "aggregations" : { "categories" : [ { "key" : "animal",  "count" : "2"}, { "key" : "canine",  "count" : "1"}, { "key" : "feline",  "count" : "1"}]}}}}',
+			],
+			'AND_with_one_nested_AND_one_root_condition_should_return_cat' => [
+				'query {
+					posts(
+						filter: {
+							and: [
+								{ category: { name: { eq: "feline" } } }
+							]
+							tag: { name: { eq: "small" } }
+						}
+					) {
+						nodes {
+							title
+						}
+						aggregations {
+							categories {
+								key
+								count
+							}
+						}
+					}
+				}',
+				'{"data": { "posts": {"aggregations" : { "categories" : [ { "key" : "animal",  "count" : "1"}, { "key" : "feline",  "count" : "1"}]}, "nodes" : [{"title": "cat"}]}}}',
+			],
+			'AND_OR_with_both_relations_should_return_error' => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{ tag: { name: { eq: "small" } } }
+							]
+							and: [
+								{ category: { name: { eq: "feline" } } }
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"errors": null}',
+			],
+			'AND_with_no_children_should_return_error'     => [
+				'query {
+					posts(
+						filter: {
+							and: []
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"errors": null}',
+			],
+			'OR_with_nesting_gt_10_should_return_error'    => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{
+									or: [
+										{
+											or: [
+												{
+													or: [
+														{
+															or: [
+																{
+																	or: [
+																		{
+																			or: [
+																				{
+																					or: [
+																						{
+																							or: [
+																								{
+																									or: [
+																										{
+																											tag: {
+																												name: {eq: "small"}
+																											}
+																										},
+																										{
+																											category: {
+																												name: {eq: "feline"}
+																											}
+																										}
+																									]
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"errors": null}',
+			],
+			'OR_with_nesting_lt_10_should_return_cat'      => [
+				'query {
+					posts(
+						filter: {
+							or: [
+								{
+									or: [
+										{
+											or: [
+												{
+													or: [
+														{
+															or: [
+																{
+																	or: [
+																		{
+																			or: [
+																				{
+																					or: [
+																						{
+																							or: [
+																								{
+																									tag: {
+																										name: {eq: "small"}
+																									}
+																								},
+																								{
+																									category: {
+																										name: {eq: "feline"}
+																									}
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
+			],
+			'OR_nested_with_one_root_AND_condition_should_return_cat' => [
+				'query {
+					posts(
+						filter: {
+							tag: { name: { eq: "small" } }
+							or: [
+								{
+									or: [
+										{
+											or: [
+												{
+													or: [
+														{
+															or: [
+																{
+																	or: [
+																		{
+																			or: [
+																				{
+																					or: [
+																						{
+																							or: [
+																								{
+																									category: {
+																										name: {eq: "feline"}
+																									}
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+							]
+						}
+					) {
+						nodes {
+							title
+						}
+					}
+				}',
+				'{"data": { "posts": {"nodes" : [{"title": "cat"}]}}}',
 			],
 		);
 	}

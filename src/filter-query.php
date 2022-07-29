@@ -28,7 +28,7 @@ class FilterQuery {
 		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_fields' ] );
 
 		add_filter( 'graphql_RootQuery_fields', [ $this, 'apply_filters_input' ], 20 );
-		add_filter( 'graphql_connection_query_args', [ $this, 'apply_filter_resolver' ], 10, 2 );
+		add_filter( 'graphql_connection_query_args', [ $this, 'apply_recursive_filter_resolver' ], 10, 2 );
 	}
 
 	/**
@@ -58,65 +58,126 @@ class FilterQuery {
 	}
 
 	/**
+	 * $operator_mappings.
+	 *
+	 * @var array
+	 */
+	public $operator_mappings = array(
+		'in'      => 'IN',
+		'notIn'   => 'NOT IN',
+		'eq'      => 'IN',
+		'notEq'   => 'NOT IN',
+		'like'    => 'IN',
+		'notLike' => 'NOT IN',
+	);
+
+	/**
+	 * $taxonomy_keys.
+	 *
+	 * @var array
+	 */
+	public $taxonomy_keys = [ 'tag', 'category' ];
+
+	/**
+	 * $relation_keys.
+	 *
+	 * @var array
+	 */
+	public $relation_keys = [ 'and', 'or' ];
+
+	/**
+	 * $max_nesting_depth.
+	 *
+	 * @var int
+	 */
+	public $max_nesting_depth = 10;
+
+	/**
+	 * Check if operator is like or notLike
+	 *
+	 * @param array $filter_obj A Filter object, for wpQuery access, to build upon within each recursive call.
+	 * @param int   $depth A depth-counter to track recusrive call depth.
+	 *
+	 * @throws FilterException Throws max nested filter depth exception, caught by wpgraphql response.
+	 * @throws FilterException Throws and/or not allowed as siblings exception, caught by wpgraphql response.
+	 * @throws FilterException Throws empty relation (and/or) exception, caught by wpgraphql response.
+	 * @return array
+	 */
+	private function resolve_taxonomy( array $filter_obj, int $depth ): array {
+		if ( $depth > $this->max_nesting_depth ) {
+			throw new FilterException( 'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (10) depth to proceed' );
+		} elseif ( array_key_exists( 'and', $filter_obj ) && array_key_exists( 'or', $filter_obj ) ) {
+			throw new FilterException( 'A Filter can only accept one of an \'and\' or \'or\' child relation as an immediate child.' );
+		}
+
+		$temp_query = [];
+		foreach ( $filter_obj as $root_obj_key => $value ) {
+			if ( in_array( $root_obj_key, $this->taxonomy_keys, true ) ) {
+				$attribute_array = $value;
+				foreach ( $attribute_array as $field_key => $field_kvp ) {
+					foreach ( $field_kvp as $operator => $terms ) {
+						$mapped_operator  = $this->operator_mappings[ $operator ] ?? 'IN';
+						$is_like_operator = $this->is_like_operator( $operator );
+						$taxonomy         = $root_obj_key === 'tag' ? 'post_tag' : 'category';
+
+						$terms = ! $is_like_operator ? $terms : get_terms(
+							[
+								'taxonomy'   => $taxonomy,
+								'fields'     => 'ids',
+								'name__like' => esc_attr( $terms ),
+							]
+						);
+
+						$result = [
+							'taxonomy' => $taxonomy,
+							'field'    => ( $field_key === 'id' ) || $is_like_operator ? 'term_id' : 'name',
+							'terms'    => $terms,
+							'operator' => $mapped_operator,
+						];
+
+						$temp_query[] = $result;
+					}
+				}
+			} elseif ( in_array( $root_obj_key, $this->relation_keys, true ) ) {
+				$nested_obj_array = $value;
+				$wp_query_array   = [];
+
+				if ( count( $nested_obj_array ) === 0 ) {
+					throw new FilterException( 'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.' );
+				}
+				foreach ( $nested_obj_array as $nested_obj_index => $nested_obj_value ) {
+					$wp_query_array[ $nested_obj_index ]             = $this->resolve_taxonomy( $nested_obj_value, ++$depth );
+					$wp_query_array[ $nested_obj_index ]['relation'] = 'AND';
+				}
+				$wp_query_array['relation'] = strtoupper( $root_obj_key );
+				$temp_query[]               = $wp_query_array;
+			}
+		}
+		return $temp_query;
+	}
+
+	/**
 	 * Apply facet filters using graphql_connection_query_args filter hook.
 	 *
 	 * @param array                      $query_args Arguments that come from previous filter and will be passed to WP_Query.
 	 * @param AbstractConnectionResolver $connection_resolver Connection resolver.
 	 *
-	 * @return array|mixed
+	 * @return array
 	 */
-	public function apply_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
+	public function apply_recursive_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
 		$args = $connection_resolver->getArgs();
 
 		if ( empty( $args['filter'] ) ) {
 			return $query_args;
 		}
-		$operator_mappings = array(
-			'in'      => 'IN',
-			'notIn'   => 'NOT IN',
-			'eq'      => 'IN',
-			'notEq'   => 'NOT IN',
-			'like'    => 'IN',
-			'notLike' => 'NOT IN',
-		);
-		$c                 = 0;
-		foreach ( $args['filter'] as $taxonomy_input => $data ) {
-			foreach ( $data as $field_name => $field_data ) {
-				foreach ( $field_data as $operator => $terms ) {
-					$mapped_operator  = $operator_mappings[ $operator ] ?? 'IN';
-					$is_like_operator = $this->is_like_operator( $operator );
-					$taxonomy         = $taxonomy_input === 'tag' ? 'post_tag' : 'category';
 
-					$terms = ! $is_like_operator ? $terms : get_terms(
-						array(
-							'name__like' => esc_attr( $terms ),
-							'fields'     => 'ids',
-							'taxonomy'   => $taxonomy,
-						)
-					);
+		$filter_args_root = $args['filter'];
 
-					$result = array(
-						'terms'    => $terms,
-						'taxonomy' => $taxonomy,
-						'operator' => $mapped_operator,
-						'field'    => ( $field_name === 'id' || $is_like_operator ) ? 'term_id' : 'name',
-					);
-
-					$query_args['tax_query'][] = $result;
-					$c++;
-				}
-			}
-		}
-
-		if ( $c > 1 ) {
-			$query_args['tax_query']['relation'] = 'AND';
-		}
+		$query_args['tax_query'][] = $this->resolve_taxonomy( $filter_args_root, 0, [] );
 
 		self::$query_args = $query_args;
-
 		return $query_args;
 	}
-
 	/**
 	 * Return query args.
 	 *
@@ -220,13 +281,21 @@ class FilterQuery {
 						'type'        => 'TaxonomyFilterFields',
 						'description' => __( 'Category Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
 					],
+					'and'      => [
+						'type'        => [ 'list_of' => 'TaxonomyFilter' ],
+						'description' => __( '\'AND\' Array of Taxonomy Objects Allowable For Filtering', 'wp-graphql-filter-query' ),
+					],
+					'or'       => [
+						'type'        => [ 'list_of' => 'TaxonomyFilter' ],
+						'description' => __( '\'OR\' Array of Taxonomy Objects Allowable For Filterin', 'wp-graphql-filter-query' ),
+					],
 				],
 			]
 		);
 	}
 
 	/**
-	 * Check if operator is like or notLike
+	 * Check if operator like or notLike
 	 *
 	 * @param string $operator Received operator - not mapped.
 	 *

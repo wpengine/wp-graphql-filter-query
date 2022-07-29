@@ -17,7 +17,7 @@ class AggregateQueryTest extends WP_UnitTestCase {
 	private const TAG_BIG_ID_TO_BE_REPLACED         = '{!#%_TAG_BIG_%#!}';
 	private const TAG_SMALL_ID_TO_BE_REPLACED       = '{!#%_TAG_SMALL_%#!}';
 
-	public static function setUpBeforeClass() {
+	public static function setUpBeforeClass(): void {
 		$cat_post_id = wp_insert_post(
 			array(
 				'post_title'   => 'cat',
@@ -44,6 +44,19 @@ class AggregateQueryTest extends WP_UnitTestCase {
 		wp_set_post_categories( $dog_post_id, array( self::$category_animal_id, self::$category_canine_id ) );
 		$ids              = wp_add_post_tags( $dog_post_id, array( 'black', 'big' ) );
 		self::$tag_big_id = $ids[1];
+
+		$twenty_posts_category_id = wp_create_category( 'twenty-posts' );
+
+		foreach ( range( 1, 20 ) as $i ) {
+			$id = wp_insert_post(
+				array(
+					'post_title'   => 'post ' . $i,
+					'post_content' => 'this is post ' . $i,
+					'post_status'  => 'publish',
+				)
+			);
+			wp_set_post_categories( $id, array( $twenty_posts_category_id ) );
+		}
 	}
 
 	protected function setUp(): void {
@@ -223,6 +236,10 @@ class AggregateQueryTest extends WP_UnitTestCase {
 				'key'   => 'canine',
 				'count' => 1,
 			],
+			[
+				'key'   => 'twenty-posts',
+				'count' => 20,
+			],
 		];
 
 		$result = do_graphql_request( $query );
@@ -231,7 +248,6 @@ class AggregateQueryTest extends WP_UnitTestCase {
 		$this->assertEquals( $expected_tags, $result['data']['posts']['aggregations']['tags'] );
 		$this->assertEquals( $expected_categories, $result['data']['posts']['aggregations']['categories'] );
 	}
-
 
 	/**
 	 * @dataProvider  filter_aggregations_data_provider
@@ -316,7 +332,7 @@ class AggregateQueryTest extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'{"data": { "posts": {"aggregations" : { "categories" : []}}}}',
+				'{"data": { "posts": {"aggregations" : { "categories" : [{ "key" : "twenty-posts",  "count" : "20"} ]}}}}',
 			],
 			'posts_valid_filter_category_name_notIn'       => [
 				'query {
@@ -337,7 +353,7 @@ class AggregateQueryTest extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'{"data": { "posts": {"aggregations" : { "categories" : [{ "key" : "animal",  "count" : "1"}, { "key" : "canine",  "count" : "1"}]}}}}',
+				'{"data": { "posts": {"aggregations" : { "categories" : [{ "key" : "animal",  "count" : "1"}, { "key" : "canine",  "count" : "1"}, { "key" : "twenty-posts",  "count" : "20"}]}}}}',
 			],
 			'posts_valid_filter_category_name_eq_and_in'   => [
 				'query {
@@ -599,7 +615,7 @@ class AggregateQueryTest extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'{"data": { "posts": {"aggregations" : { "categories" :  [ { "key" : "animal",  "count" : "1"}, { "key" : "canine",  "count" : "1"} ] }}}}',
+				'{"data": { "posts": {"aggregations" : { "categories" :  [ { "key" : "animal",  "count" : "1"}, { "key" : "canine",  "count" : "1"}, { "key" : "twenty-posts",  "count" : "20"}  ] }}}}',
 			],
 			'posts_valid_filter_category_id_in'            => [
 				'query {
@@ -641,7 +657,7 @@ class AggregateQueryTest extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'{"data": { "posts": {"aggregations" : { "categories" :  [ { "key" : "animal",  "count" : "1"}, { "key" : "feline",  "count" : "1"} ] }}}}',
+				'{"data": { "posts": {"aggregations" : { "categories" :  [ { "key" : "animal",  "count" : "1"}, { "key" : "feline",  "count" : "1"}, { "key" : "twenty-posts",  "count" : "20"}  ] }}}}',
 			],
 			'posts_valid_filter_category_name_eq_id_notEq' => [
 				'query {
