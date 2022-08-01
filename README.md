@@ -14,7 +14,7 @@ Adds taxonomy filtering and aggregation support to [WPGraphQL](https://www.wpgra
 		- [Nesting Relation Operators on Multiple Taxonomies](#nesting-relation-operators-on-multiple-taxonomies)
 	- [Readable Filter Queries](#readable-filter-queries)
 	- [Dependencies](#dependencies)
-		- [Install and Activate](#install-and-activate)
+	- [Install and Activate](#install-and-activate)
 	- [Contributing](#contributing)
 		- [Requirements](#requirements)
 		- [Getting Started](#getting-started)
@@ -244,7 +244,7 @@ Using the relation operators are powerful, and were made to be siblings of Taxon
 
 In order to use WPGraphQL Filter Query, you must have [WPGraphQL](https://www.wpgraphql.com) installed and activated.
 
-### Install and Activate
+## Install and Activate
 
 WPGraphQL Filter Query is not currently available on the WordPress.org repository, so you must [download it from Github](https://github.com/wpengine/wp-graphql-filter-query/archive/refs/heads/main.zip).
 
