@@ -66,33 +66,24 @@ Given the **Simple Clothing Store** website above, we can start seeing how one w
 
 The **query #1** should look roughly like this, with Filter by Category:
 
-```
+```graphql
 query Query1 {
-  posts(
-    filter: {
-      category: {
-        name: {
-          in: ["Sport", "Footwear"]
-        }
-      }
-    }
-  ) {
-    nodes {
-      title
-    }
-    aggregations {
-      tags {
-        key
-        count
-      }
-      categories {
-        key
-        count
-      }
-    }
-  }
+	posts(filter: { category: { name: { in: ["Sport", "Footwear"] } } }) {
+		nodes {
+			title
+		}
+		aggregations {
+			tags {
+				key
+				count
+			}
+			categories {
+				key
+				count
+			}
+		}
+	}
 }
-
 ```
 
 ![Query #1](docs/img/query-1.png)
@@ -101,39 +92,30 @@ query Query1 {
 
 When we add Tags to the filter an implicit Relation Operator of `and` is applied between the Category and the Tag objects - _if (Category-match && Tag-match) return Post(s)_.
 
-```
+```graphql
 query Query2 {
-  posts(
-    filter: {
-      category: {
-        name: {
-          in: ["Sport", "Footwear"]
-        }
-      }
+	posts(
+		filter: {
+			category: { name: { in: ["Sport", "Footwear"] } }
+			tag: { name: { in: ["On Sale", "Gym"] } }
+		}
+	) {
+		nodes {
+			title
+		}
 
-      tag: {
-        name: {
-          in: ["On Sale", "Gym"]
-        }
-      }
-    }
-  ) {
-    nodes {
-      title
-    }
+		aggregations {
+			tags {
+				key
+				count
+			}
 
-    aggregations {
-      tags {
-        key
-        count
-      }
-
-      categories {
-        key
-        count
-      }
-    }
-  }
+			categories {
+				key
+				count
+			}
+		}
+	}
 }
 ```
 
@@ -145,40 +127,30 @@ query Query2 {
 
 If the **query #2** was taken a step further to perhaps exclude the _Gym Tag_, we could see only _Sandals_ would make a return as _On Sale_. This is the lowest level of chaining operators, and the relation operator for these will always be `and`. We also see a new Comparison Operator, coupled with the previous one: `notEq`:
 
-```
+```graphql
 query ProductsByFilterNotEqGym {
-  posts(
-    filter: {
-      category: {
-        name: {
-          in: ["Sport", "Footwear"]
-        }
-      },
+	posts(
+		filter: {
+			category: { name: { in: ["Sport", "Footwear"] } }
+			tag: { name: { in: ["On Sale", "Gym"], notEq: "Gym" } }
+		}
+	) {
+		nodes {
+			title
+		}
 
-      tag: {
-        name: {
-          in: ["On Sale", "Gym"],
-          notEq: "Gym"
-        }
-      }
-    }
-  ) {
-    nodes {
-      title
-    }
+		aggregations {
+			tags {
+				key
+				count
+			}
 
-    aggregations {
-      tags {
-        key
-        count
-      }
-
-      categories {
-        key
-        count
-      }
-    }
-  }
+			categories {
+				key
+				count
+			}
+		}
+	}
 }
 ```
 
@@ -196,48 +168,33 @@ This plugin supports 4 root filter query arguments presently:
 
 Given **query #2** as a starting point, we could separate the two Tags to be searched into their own filter query object, inside an `or` Relation Operator and get the same result (Also switched the Comparison Operator here to `eq`, vs `in` as there was only one Tag comparison made in each object now):
 
-```
+```graphql
 query ProductsByFilterOROperator {
-  posts(
-    filter: {
-      category: {
-        name: {
-          in: ["Sport", "Footwear"]
-        }
-      },
-      or: [
-        {
-          tag: {
-            name: {
-              eq: "On Sale",
-            }
-          }
-        },{
-          tag: {
-            name: {
-              eq: "Gym",
-            }
-          }
-      	}
-      ]
-    }
-  ) {
-    nodes {
-      title
-    }
+	posts(
+		filter: {
+			category: { name: { in: ["Sport", "Footwear"] } }
+			or: [
+				{ tag: { name: { eq: "On Sale" } } }
+				{ tag: { name: { eq: "Gym" } } }
+			]
+		}
+	) {
+		nodes {
+			title
+		}
 
-    aggregations {
-      tags {
-        key
-        count
-      }
+		aggregations {
+			tags {
+				key
+				count
+			}
 
-      categories {
-        key
-        count
-      }
-    }
-  }
+			categories {
+				key
+				count
+			}
+		}
+	}
 }
 ```
 
@@ -247,48 +204,33 @@ query ProductsByFilterOROperator {
 
 If we simply swap the Relation Operator to `and` now on this previous query our results now must contain both Tag Comparison Operator matches, rather than either or. This eliminates _Sandals_, which only had the _On Sale_ Tag, but not the _Gym_ one.
 
-```
+```graphql
 query ProductsByFilterANDOperator {
-  posts(
-    filter: {
-      category: {
-        name: {
-          in: ["Sport", "Footwear"]
-        }
-      },
-      and: [
-        {
-          tag: {
-            name: {
-              eq: "On Sale",
-            }
-          }
-        },{
-          tag: {
-            name: {
-              eq: "Gym",
-            }
-          }
-      	}
-      ]
-    }
-  ) {
-    nodes {
-      title
-    }
+	posts(
+		filter: {
+			category: { name: { in: ["Sport", "Footwear"] } }
+			and: [
+				{ tag: { name: { eq: "On Sale" } } }
+				{ tag: { name: { eq: "Gym" } } }
+			]
+		}
+	) {
+		nodes {
+			title
+		}
 
-    aggregations {
-      tags {
-        key
-        count
-      }
+		aggregations {
+			tags {
+				key
+				count
+			}
 
-      categories {
-        key
-        count
-      }
-    }
-  }
+			categories {
+				key
+				count
+			}
+		}
+	}
 }
 ```
 
