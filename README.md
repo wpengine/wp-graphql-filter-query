@@ -2,25 +2,25 @@
 
 Adds taxonomy filtering and aggregation support to [WPGraphQL](https://www.wpgraphql.com).
 
-- [WPGraphQL Filter Query](#wpgraphql-filter-query)
-	- [WPGraphQL limitation](#wpgraphql-limitation)
-		- [Solution](#solution)
-	- [What are Filters (and Aggregates)](#what-are-filters-and-aggregates)
-		- [Use Case Example](#use-case-example)
-	- [Querying with Filters](#querying-with-filters)
-	- [Advanced Queries](#advanced-queries)
-		- [Multiple Comparison Operators on one Taxonomy](#multiple-comparison-operators-on-one-taxonomy)
-		- [Multiple Relation Operators on Multiple Taxonomies](#multiple-relation-operators-on-multiple-taxonomies)
-		- [Nesting Relation Operators on Multiple Taxonomies](#nesting-relation-operators-on-multiple-taxonomies)
-	- [Readable Filter Queries](#readable-filter-queries)
-	- [Dependencies](#dependencies)
-	- [Install and Activate](#install-and-activate)
-	- [Contributing](#contributing)
-		- [Requirements](#requirements)
-		- [Getting Started](#getting-started)
-		- [Testing](#testing)
-		- [Linting](#linting)
-		- [VSCode](#vscode)
+-   [WPGraphQL Filter Query](#wpgraphql-filter-query)
+    -   [WPGraphQL limitation](#wpgraphql-limitation)
+        -   [Solution](#solution)
+    -   [What are Filters (and Aggregates)](#what-are-filters-and-aggregates)
+        -   [Use Case Example](#use-case-example)
+    -   [Querying with Filters](#querying-with-filters)
+    -   [Advanced Queries](#advanced-queries)
+        -   [Multiple Comparison Operators on one Taxonomy](#multiple-comparison-operators-on-one-taxonomy)
+        -   [Multiple Relation Operators on Multiple Taxonomies](#multiple-relation-operators-on-multiple-taxonomies)
+        -   [Nesting Relation Operators on Multiple Taxonomies](#nesting-relation-operators-on-multiple-taxonomies)
+    -   [Readable Filter Queries](#readable-filter-queries)
+    -   [Dependencies](#dependencies)
+    -   [Install and Activate](#install-and-activate)
+    -   [Contributing](#contributing)
+        -   [Requirements](#requirements)
+        -   [Getting Started](#getting-started)
+        -   [Testing](#testing)
+        -   [Linting](#linting)
+        -   [VSCode](#vscode)
 
 ## WPGraphQL limitation
 
@@ -72,11 +72,13 @@ query Query1 {
 		nodes {
 			title
 		}
+
 		aggregations {
 			tags {
 				key
 				count
 			}
+
 			categories {
 				key
 				count
