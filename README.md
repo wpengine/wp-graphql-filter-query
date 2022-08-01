@@ -68,23 +68,23 @@ The **query #1** should look roughly like this, with Filter by Category:
 
 ```graphql
 query Query1 {
-	posts(filter: { category: { name: { in: ["Sport", "Footwear"] } } }) {
-		nodes {
-			title
-		}
+  posts(filter: { category: { name: { in: ["Sport", "Footwear"] } } }) {
+    nodes {
+      title
+    }
 
-		aggregations {
-			tags {
-				key
-				count
-			}
+    aggregations {
+      tags {
+        key
+        count
+      }
 
-			categories {
-				key
-				count
-			}
-		}
-	}
+      categories {
+        key
+        count
+      }
+    }
+  }
 }
 ```
 
@@ -96,28 +96,28 @@ When we add Tags to the filter an implicit Relation Operator of `and` is applied
 
 ```graphql
 query Query2 {
-	posts(
-		filter: {
-			category: { name: { in: ["Sport", "Footwear"] } }
-			tag: { name: { in: ["On Sale", "Gym"] } }
-		}
-	) {
-		nodes {
-			title
-		}
+  posts(
+    filter: {
+      category: { name: { in: ["Sport", "Footwear"] } }
+      tag: { name: { in: ["On Sale", "Gym"] } }
+    }
+  ) {
+    nodes {
+      title
+    }
 
-		aggregations {
-			tags {
-				key
-				count
-			}
+    aggregations {
+      tags {
+        key
+        count
+      }
 
-			categories {
-				key
-				count
-			}
-		}
-	}
+      categories {
+        key
+        count
+      }
+    }
+  }
 }
 ```
 
@@ -131,28 +131,28 @@ If the **query #2** was taken a step further to perhaps exclude the _Gym Tag_, w
 
 ```graphql
 query ProductsByFilterNotEqGym {
-	posts(
-		filter: {
-			category: { name: { in: ["Sport", "Footwear"] } }
-			tag: { name: { in: ["On Sale", "Gym"], notEq: "Gym" } }
-		}
-	) {
-		nodes {
-			title
-		}
+  posts(
+    filter: {
+      category: { name: { in: ["Sport", "Footwear"] } }
+      tag: { name: { in: ["On Sale", "Gym"], notEq: "Gym" } }
+    }
+  ) {
+    nodes {
+      title
+    }
 
-		aggregations {
-			tags {
-				key
-				count
-			}
+    aggregations {
+      tags {
+        key
+        count
+      }
 
-			categories {
-				key
-				count
-			}
-		}
-	}
+      categories {
+        key
+        count
+      }
+    }
+  }
 }
 ```
 
@@ -172,31 +172,31 @@ Given **query #2** as a starting point, we could separate the two Tags to be sea
 
 ```graphql
 query ProductsByFilterOROperator {
-	posts(
-		filter: {
-			category: { name: { in: ["Sport", "Footwear"] } }
-			or: [
-				{ tag: { name: { eq: "On Sale" } } }
-				{ tag: { name: { eq: "Gym" } } }
-			]
-		}
-	) {
-		nodes {
-			title
-		}
+  posts(
+    filter: {
+      category: { name: { in: ["Sport", "Footwear"] } }
+      or: [
+        { tag: { name: { eq: "On Sale" } } }
+        { tag: { name: { eq: "Gym" } } }
+      ]
+    }
+  ) {
+    nodes {
+      title
+    }
 
-		aggregations {
-			tags {
-				key
-				count
-			}
+    aggregations {
+      tags {
+        key
+        count
+      }
 
-			categories {
-				key
-				count
-			}
-		}
-	}
+      categories {
+        key
+        count
+      }
+    }
+  }
 }
 ```
 
@@ -208,31 +208,31 @@ If we simply swap the Relation Operator to `and` now on this previous query our 
 
 ```graphql
 query ProductsByFilterANDOperator {
-	posts(
-		filter: {
-			category: { name: { in: ["Sport", "Footwear"] } }
-			and: [
-				{ tag: { name: { eq: "On Sale" } } }
-				{ tag: { name: { eq: "Gym" } } }
-			]
-		}
-	) {
-		nodes {
-			title
-		}
+  posts(
+    filter: {
+      category: { name: { in: ["Sport", "Footwear"] } }
+      and: [
+        { tag: { name: { eq: "On Sale" } } }
+        { tag: { name: { eq: "Gym" } } }
+      ]
+    }
+  ) {
+    nodes {
+      title
+    }
 
-		aggregations {
-			tags {
-				key
-				count
-			}
+    aggregations {
+      tags {
+        key
+        count
+      }
 
-			categories {
-				key
-				count
-			}
-		}
-	}
+      categories {
+        key
+        count
+      }
+    }
+  }
 }
 ```
 
