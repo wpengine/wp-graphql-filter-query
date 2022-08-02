@@ -2,25 +2,25 @@
 
 Adds taxonomy filtering and aggregation support to [WPGraphQL](https://www.wpgraphql.com).
 
--   [WPGraphQL Filter Query](#wpgraphql-filter-query)
-    -   [WPGraphQL limitation](#wpgraphql-limitation)
-        -   [Solution](#solution)
-    -   [What are Filters (and Aggregates)](#what-are-filters-and-aggregates)
-        -   [Use Case Example](#use-case-example)
-    -   [Querying with Filters](#querying-with-filters)
-    -   [Advanced Queries](#advanced-queries)
-        -   [Multiple Comparison Operators on one Taxonomy](#multiple-comparison-operators-on-one-taxonomy)
-        -   [Multiple Relation Operators on Multiple Taxonomies](#multiple-relation-operators-on-multiple-taxonomies)
-        -   [Nesting Relation Operators on Multiple Taxonomies](#nesting-relation-operators-on-multiple-taxonomies)
-    -   [Readable Filter Queries](#readable-filter-queries)
-    -   [Dependencies](#dependencies)
-    -   [Install and Activate](#install-and-activate)
-    -   [Contributing](#contributing)
-        -   [Requirements](#requirements)
-        -   [Getting Started](#getting-started)
-        -   [Testing](#testing)
-        -   [Linting](#linting)
-        -   [VSCode](#vscode)
+- [WPGraphQL Filter Query](#wpgraphql-filter-query)
+  - [WPGraphQL limitation](#wpgraphql-limitation)
+    - [Solution](#solution)
+  - [What are Filters (and Aggregates)](#what-are-filters-and-aggregates)
+    - [Use Case Example](#use-case-example)
+  - [Querying with Filters](#querying-with-filters)
+  - [Advanced Queries](#advanced-queries)
+    - [Multiple Comparison Operators on one Taxonomy](#multiple-comparison-operators-on-one-taxonomy)
+    - [Multiple Relation Operators on Multiple Taxonomies](#multiple-relation-operators-on-multiple-taxonomies)
+    - [Nesting Relation Operators on Multiple Taxonomies](#nesting-relation-operators-on-multiple-taxonomies)
+  - [Readable Filter Queries](#readable-filter-queries)
+  - [Dependencies](#dependencies)
+  - [Install and Activate](#install-and-activate)
+  - [Contributing](#contributing)
+    - [Requirements](#requirements)
+    - [Getting Started](#getting-started)
+    - [Testing](#testing)
+    - [Linting](#linting)
+    - [VSCode](#vscode)
 
 ## WPGraphQL limitation
 
@@ -35,9 +35,9 @@ In collaboration with the WPGraphQL team we built this plugin to:
 
 ## What are Filters (and Aggregates)
 
-Filters allow the limiting of Post results by **Taxonomy** fields & values. Aggregates give a summary of such Taxonomies available to a given query - based on a sum of the resulting Posts associated Taxonomies. So, if I queried all Posts on _food_ (this would need to be the name of a related Taxonomy here) from a Lifestyle blog, I might expect to receive all food-related Posts, plus the sum of all Taxonomies that occurred within my Posts results - such as _sweet_ or _savory_, but probably not _home decor_ or _yoga_ (unless a topic related to both _food_ and _yoga_ perhaps).
+Filters allow the limiting of Post results by **Taxonomy** fields & values. Aggregates give a summary of such Taxonomies available to a given query - based on a sum of the resulting Posts associated Taxonomies. So, if one queried all Posts on _food_ (this would need to be the name of a related Taxonomy here) from a Lifestyle blog, one might expect to receive all food-related Posts, plus the sum of all Taxonomies that occurred within the Posts' results - such as _sweet_ or _savory_, but probably not _home decor_ or _yoga_ (unless a topic related to both _food_ and _yoga_ perhaps).
 
-Broadly speaking, WordPress Taxonomies have two default types: **Categories & Tags**. **Categories** are more of a grouping mechanism, which supports hierarchy and siblings (_animal-> feline-> tiger, lion, cat_), whereas **Tags** are more for additional shared information (_green, heavy, out-of-stock_).
+Broadly speaking, WordPress Taxonomies have two default types: **Categories & Tags**. **Categories** are more of a grouping mechanism, which supports hierarchy and siblings (_animal-> feline-> tiger, lion, cat_), whereas **Tags** are more for additional shared information (_green, heavy, out-of-stock_). This plugin supports both of these Taxomonies within both Filters and Aggregates.
 
 ### Use Case Example
 
