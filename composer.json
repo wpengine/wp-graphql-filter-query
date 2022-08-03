@@ -9,11 +9,6 @@
       "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
-  "autoload": {
-    "classmap": [
-      "src"
-    ]
-  },
   "authors": [
     {
       "name": "WP Engine",
