@@ -21,14 +21,21 @@
  * Domain Path:       /languages
  */
 
+/**
+ * Load files
+ */
+require_once dirname( __DIR__ ) . '/wp-graphql/vendor/webonyx/graphql-php/src/Error/ClientAware.php';
+
+require_once __DIR__ . '/src/aggregate-query.php';
+require_once __DIR__ . '/src/filter-exception.php';
+require_once __DIR__ . '/src/filter-query.php';
+
 use WPGraphQLFilterQuery\AggregateQuery;
 use WPGraphQLFilterQuery\FilterQuery;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
-
-require __DIR__ . '/vendor/autoload.php';
 
 /**
  * Get the supported post types.

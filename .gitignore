@@ -1,6 +1,4 @@
-vendor/*
-!vendor/composer
-!vendor/autoload.php
+vendor
 
 .idea/
 wordpress
