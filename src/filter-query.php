@@ -86,13 +86,6 @@ class FilterQuery {
 	public $relation_keys = [ 'and', 'or' ];
 
 	/**
-	 * $max_nesting_depth.
-	 *
-	 * @var int
-	 */
-	public $max_nesting_depth = 10;
-
-	/**
 	 * Check if operator is like or notLike
 	 *
 	 * @param array $filter_obj A Filter object, for wpQuery access, to build upon within each recursive call.
@@ -104,7 +97,9 @@ class FilterQuery {
 	 * @return array
 	 */
 	private function resolve_taxonomy( array $filter_obj, int $depth ): array {
-		if ( $depth > $this->max_nesting_depth ) {
+		$max_nesting_depth = $this->get_query_depth();
+
+		if ( $depth > $max_nesting_depth ) {
 			throw new FilterException( 'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (10) depth to proceed' );
 		} elseif ( array_key_exists( 'and', $filter_obj ) && array_key_exists( 'or', $filter_obj ) ) {
 			throw new FilterException( 'A Filter can only accept one of an \'and\' or \'or\' child relation as an immediate child.' );
@@ -292,6 +287,19 @@ class FilterQuery {
 				],
 			]
 		);
+	}
+
+	/**
+	 * Check if custom wpgraphql depth is set, and, if so, what it is - else 10
+	 *
+	 * @return int
+	 */
+	private function get_query_depth(): int {
+		$opt = get_option( 'graphql_general_settings' );
+		if ( ! empty( $opt ) && $opt['query_depth_enabled'] === 'on' ) {
+			return $opt['query_depth_max'];
+		}
+		return 10;
 	}
 
 	/**

@@ -73,6 +73,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 	 * @throws Exception
 	 */
 	public function test_schema_errors_for_filters( string $query, string $expected_error ) {
+		$this->update_wpgraphql_query_depth( 'on', 11 );
 		$query  = $this->replace_ids( $query );
 		$result = graphql( array( 'query' => $query ) );
 		$this->assertEquals( $expected_error, $result['errors'][0]['message'] );
@@ -126,7 +127,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 				}',
 				'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.',
 			],
-			'relation_nesting_gt_10_should_return_error' => [
+			'relation_nesting_gt_11_should_return_error' => [
 				'query {
 					posts(
 						filter: {
@@ -150,14 +151,18 @@ class FilterQueryTest extends WP_UnitTestCase {
 																								{
 																									or: [
 																										{
-																											tag: {
-																												name: {eq: "small"}
-																											}
-																										},
-																										{
-																											category: {
-																												name: {eq: "feline"}
-																											}
+																											or: [
+																												{
+																													tag: {
+																														name: {eq: "small"}
+																													}
+																												},
+																												{
+																													category: {
+																														name: {eq: "feline"}
+																													}
+																												}
+																											]
 																										}
 																									]
 																								}
@@ -198,6 +203,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 	 * @throws Exception
 	 */
 	public function test_schema_exists_for_filters( string $query, string $expected_result ) {
+		$this->update_wpgraphql_query_depth( 'off', 0 );
 		$query               = $this->replace_ids( $query );
 		$result              = graphql( array( 'query' => $query ) );
 		$expected_result_arr = json_decode( $expected_result, true );
@@ -237,6 +243,21 @@ class FilterQueryTest extends WP_UnitTestCase {
 		);
 
 		return str_replace( $search, $replace, $query );
+	}
+
+	/**
+	 * Short function to update the WpGraphQL settings for custome query depth
+	 *
+	 * @param string $toggleState on/off toggle for custom setting.
+	 * @param string $depthLimit depth limit to set, when isCustom toggle is 'true'.
+	 */
+	private function update_wpgraphql_query_depth( string $toggleState, int $depthLimit ): void {
+		$wpgraphql_options = get_option( 'graphql_general_settings' );
+		$wpgraphql_options['query_depth_enabled'] = $toggleState;
+		if ( $toggleState === 'on' ) {
+			$wpgraphql_options['query_depth_max'] = '' . $depthLimit;
+		}
+		update_option( 'graphql_general_settings', $wpgraphql_options);
 	}
 
 	public function filters_data_provider(): array {
