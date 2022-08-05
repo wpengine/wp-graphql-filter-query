@@ -246,10 +246,10 @@ class FilterQueryTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Short function to update the WpGraphQL settings for custome query depth
+	 * Short function to update the WpGraphQL settings for custom query depth
 	 *
 	 * @param string $toggleState on/off toggle for custom setting.
-	 * @param string $depthLimit depth limit to set, when isCustom toggle is 'true'.
+	 * @param int $depthLimit depth limit to set, when toggleState value is 'on'.
 	 */
 	private function update_wpgraphql_query_depth( string $toggleState, int $depthLimit ): void {
 		$wpgraphql_options = get_option( 'graphql_general_settings' );
