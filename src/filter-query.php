@@ -22,6 +22,13 @@ class FilterQuery {
 	protected static $query_args = null;
 
 	/**
+	 * Get filter query depth.
+	 *
+	 * @var int
+	 */
+	private $max_nesting_depth = 0;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -29,6 +36,8 @@ class FilterQuery {
 
 		add_filter( 'graphql_RootQuery_fields', [ $this, 'apply_filters_input' ], 20 );
 		add_filter( 'graphql_connection_query_args', [ $this, 'apply_recursive_filter_resolver' ], 10, 2 );
+
+		$this->max_nesting_depth = $this->get_query_depth();
 	}
 
 	/**
@@ -97,10 +106,8 @@ class FilterQuery {
 	 * @return array
 	 */
 	private function resolve_taxonomy( array $filter_obj, int $depth ): array {
-		$max_nesting_depth = $this->get_query_depth();
-
-		if ( $depth > $max_nesting_depth ) {
-			throw new FilterException( 'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (10) depth to proceed' );
+		if ( $depth > $this->max_nesting_depth ) {
+			throw new FilterException( 'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (' . $this->max_nesting_depth . ') depth to proceed' );
 		} elseif ( array_key_exists( 'and', $filter_obj ) && array_key_exists( 'or', $filter_obj ) ) {
 			throw new FilterException( 'A Filter can only accept one of an \'and\' or \'or\' child relation as an immediate child.' );
 		}

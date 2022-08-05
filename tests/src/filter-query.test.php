@@ -16,6 +16,8 @@ class FilterQueryTest extends WP_UnitTestCase {
 	private const TAG_BLACK_ID_TO_BE_REPLACED       = '{!#%_TAG_BLACK_%#!}';
 	private const TAG_BIG_ID_TO_BE_REPLACED         = '{!#%_TAG_BIG_%#!}';
 	private const TAG_SMALL_ID_TO_BE_REPLACED       = '{!#%_TAG_SMALL_%#!}';
+	private const QUERY_DEPTH_DEFAULT               = 10;
+	private const QUERY_DEPTH_CUSTOM                = 11;
 
 	public static function setUpBeforeClass(): void {
 		$cat_post_id = wp_insert_post(
@@ -73,7 +75,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 	 * @throws Exception
 	 */
 	public function test_schema_errors_for_filters( string $query, string $expected_error ) {
-		$this->update_wpgraphql_query_depth( 'on', 11 );
+		$this->update_wpgraphql_query_depth( 'on', self::QUERY_DEPTH_CUSTOM );
 		$query  = $this->replace_ids( $query );
 		$result = graphql( array( 'query' => $query ) );
 		$this->assertEquals( $expected_error, $result['errors'][0]['message'] );
@@ -190,7 +192,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (10) depth to proceed',
+				'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (' . self::QUERY_DEPTH_CUSTOM . ') depth to proceed',
 			],
 		);
 	}
@@ -203,7 +205,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 	 * @throws Exception
 	 */
 	public function test_schema_exists_for_filters( string $query, string $expected_result ) {
-		$this->update_wpgraphql_query_depth( 'off', 0 );
+		$this->update_wpgraphql_query_depth( 'off', self::QUERY_DEPTH_DEFAULT );
 		$query               = $this->replace_ids( $query );
 		$result              = graphql( array( 'query' => $query ) );
 		$expected_result_arr = json_decode( $expected_result, true );
