@@ -248,16 +248,16 @@ class FilterQueryTest extends WP_UnitTestCase {
 	/**
 	 * Short function to update the WpGraphQL settings for custom query depth
 	 *
-	 * @param string $toggleState on/off toggle for custom setting.
-	 * @param int $depthLimit depth limit to set, when toggleState value is 'on'.
+	 * @param string $toggle_state on/off toggle for custom setting.
+	 * @param int $depth_limit depth limit to set, when toggleState value is 'on'.
 	 */
-	private function update_wpgraphql_query_depth( string $toggleState, int $depthLimit ): void {
-		$wpgraphql_options = get_option( 'graphql_general_settings' );
-		$wpgraphql_options['query_depth_enabled'] = $toggleState;
-		if ( $toggleState === 'on' ) {
-			$wpgraphql_options['query_depth_max'] = '' . $depthLimit;
+	private function update_wpgraphql_query_depth( string $toggle_state, int $depth_limit ): void {
+		$wpgraphql_options                        = get_option( 'graphql_general_settings' );
+		$wpgraphql_options['query_depth_enabled'] = $toggle_state;
+		if ( $toggle_state === 'on' ) {
+			$wpgraphql_options['query_depth_max'] = '' . $depth_limit;
 		}
-		update_option( 'graphql_general_settings', $wpgraphql_options);
+		update_option( 'graphql_general_settings', $wpgraphql_options );
 	}
 
 	public function filters_data_provider(): array {
