@@ -19,6 +19,7 @@ jobs:
         with:
             php-version: '8.1'
             coverage: xdebug
+            tools: phpunit
       - name: Install dependencies with composer
         run: composer update --no-ansi --no-interaction --no-progress
       - name: Run tests with phpunit/phpunit
