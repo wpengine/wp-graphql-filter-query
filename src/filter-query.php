@@ -165,7 +165,7 @@ class FilterQuery {
 	 * @return array
 	 */
 	public function apply_recursive_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
-		$args = $connection_resolver->getArgs();
+		$args                    = $connection_resolver->getArgs();
 		$this->max_nesting_depth = $this->get_query_depth();
 
 		if ( empty( $args['filter'] ) ) {
@@ -301,11 +301,10 @@ class FilterQuery {
 	 * @return int
 	 */
 	private function get_query_depth(): int {
-		$opt                       = get_option( 'graphql_general_settings');
-		if ( !empty($opt) && $opt != false && $opt['query_depth_enabled'] === 'on' ) {
+		$opt = get_option( 'graphql_general_settings' );
+		if ( ! empty( $opt ) && $opt !== false && $opt['query_depth_enabled'] === 'on' ) {
 			return $opt['query_depth_max'];
-		}
-		elseif ( !empty($opt) && $opt != false && $opt['query_depth_enabled'] === 'off' ) {
+		} elseif ( ! empty( $opt ) && $opt !== false && $opt['query_depth_enabled'] === 'off' ) {
 			return 10;
 		}
 		return 0;

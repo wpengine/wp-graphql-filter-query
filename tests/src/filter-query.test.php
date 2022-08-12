@@ -9,22 +9,22 @@ class FilterQueryTest extends WP_UnitTestCase {
 	protected static $tag_black_id = null;
 	protected static $tag_big_id   = null;
 	protected static $tag_small_id = null;
-	protected static $mock_opt = array(
-		'graphql_endpoint' => 'graphql',
+	protected static $mock_opt     = array(
+		'graphql_endpoint'                     => 'graphql',
 		'restrict_endpoint_to_logged_in_users' => 'off',
-		'batch_queries_enabled' => 'on',
-		'batch_limit' => '5',
-		'query_depth_enabled' => 'off',
-		'query_depth_max' => '10',
-		'graphiql_enabled' => 'on',
-		'show_graphiql_link_in_admin_bar' => 'on',
-		'delete_data_on_deactivate' => 'on',
-		'debug_mode_enabled' => 'off',
-		'tracing_enabled' => 'off',
-		'tracing_user_role' => 'administrator',
-		'query_logs_enabled' => 'off',
-		'query_log_user_role' => 'administrator',
-		'public_introspection_enabled' => 'off',
+		'batch_queries_enabled'                => 'on',
+		'batch_limit'                          => '5',
+		'query_depth_enabled'                  => 'off',
+		'query_depth_max'                      => '10',
+		'graphiql_enabled'                     => 'on',
+		'show_graphiql_link_in_admin_bar'      => 'on',
+		'delete_data_on_deactivate'            => 'on',
+		'debug_mode_enabled'                   => 'off',
+		'tracing_enabled'                      => 'off',
+		'tracing_user_role'                    => 'administrator',
+		'query_logs_enabled'                   => 'off',
+		'query_log_user_role'                  => 'administrator',
+		'public_introspection_enabled'         => 'off',
 	);
 
 	private const CATEGORY_ANIMAL_ID_TO_BE_REPLACED = '{!#%_CATEGORY_ANIMAL_%#!}';
@@ -37,7 +37,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 	private const QUERY_DEPTH_CUSTOM                = 11;
 
 	public static function setUpBeforeClass(): void {
-		add_option('graphql_general_settings', self::$mock_opt);
+		add_option( 'graphql_general_settings', self::$mock_opt );
 		$cat_post_id = wp_insert_post(
 			array(
 				'post_title'   => 'cat',
