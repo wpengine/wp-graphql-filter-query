@@ -36,8 +36,6 @@ class FilterQuery {
 
 		add_filter( 'graphql_RootQuery_fields', [ $this, 'apply_filters_input' ], 20 );
 		add_filter( 'graphql_connection_query_args', [ $this, 'apply_recursive_filter_resolver' ], 10, 2 );
-
-		$this->max_nesting_depth = $this->get_query_depth();
 	}
 
 	/**
@@ -168,6 +166,7 @@ class FilterQuery {
 	 */
 	public function apply_recursive_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
 		$args = $connection_resolver->getArgs();
+		$this->max_nesting_depth = $this->get_query_depth();
 
 		if ( empty( $args['filter'] ) ) {
 			return $query_args;
@@ -302,11 +301,14 @@ class FilterQuery {
 	 * @return int
 	 */
 	private function get_query_depth(): int {
-		$opt = get_option( 'graphql_general_settings' );
-		if ( ! empty( $opt ) && $opt['query_depth_enabled'] === 'on' ) {
+		$opt                       = get_option( 'graphql_general_settings');
+		if ( !empty($opt) && $opt != false && $opt['query_depth_enabled'] === 'on' ) {
 			return $opt['query_depth_max'];
 		}
-		return 10;
+		elseif ( !empty($opt) && $opt != false && $opt['query_depth_enabled'] === 'off' ) {
+			return 10;
+		}
+		return 0;
 	}
 
 	/**
