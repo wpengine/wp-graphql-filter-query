@@ -13,6 +13,8 @@ steps:
         DOCKER_BUILDKIT=1 docker-compose up -d
         docker-compose exec -T wp /var/www/html/wp-content/plugins/wp-graphql-filter-query/bin/wait-for-it.sh db:3306
         docker-compose exec -T wp install-wp-tests
+        docker-compose exec -T wp bash -c "wp core install --url=http://localhost:8080 --title=Example --admin_user=admin --admin_password=admin --admin_email=admin@example.com --path=/var/www/html"
+        docker-compose exec -T wp bash -c "wp plugin install wp-graphql"
 
   - id: lint
     name: 'docker/compose'
