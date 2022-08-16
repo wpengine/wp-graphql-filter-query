@@ -9,6 +9,23 @@ class FilterQueryTest extends WP_UnitTestCase {
 	protected static $tag_black_id = null;
 	protected static $tag_big_id   = null;
 	protected static $tag_small_id = null;
+	protected static $mock_opt     = array(
+		'graphql_endpoint'                     => 'graphql',
+		'restrict_endpoint_to_logged_in_users' => 'off',
+		'batch_queries_enabled'                => 'on',
+		'batch_limit'                          => '5',
+		'query_depth_enabled'                  => 'off',
+		'query_depth_max'                      => '10',
+		'graphiql_enabled'                     => 'on',
+		'show_graphiql_link_in_admin_bar'      => 'on',
+		'delete_data_on_deactivate'            => 'on',
+		'debug_mode_enabled'                   => 'off',
+		'tracing_enabled'                      => 'off',
+		'tracing_user_role'                    => 'administrator',
+		'query_logs_enabled'                   => 'off',
+		'query_log_user_role'                  => 'administrator',
+		'public_introspection_enabled'         => 'off',
+	);
 
 	private const CATEGORY_ANIMAL_ID_TO_BE_REPLACED = '{!#%_CATEGORY_ANIMAL_%#!}';
 	private const CATEGORY_FELINE_ID_TO_BE_REPLACED = '{!#%_CATEGORY_FELINE_%#!}';
@@ -16,8 +33,11 @@ class FilterQueryTest extends WP_UnitTestCase {
 	private const TAG_BLACK_ID_TO_BE_REPLACED       = '{!#%_TAG_BLACK_%#!}';
 	private const TAG_BIG_ID_TO_BE_REPLACED         = '{!#%_TAG_BIG_%#!}';
 	private const TAG_SMALL_ID_TO_BE_REPLACED       = '{!#%_TAG_SMALL_%#!}';
+	private const QUERY_DEPTH_DEFAULT               = 10;
+	private const QUERY_DEPTH_CUSTOM                = 11;
 
 	public static function setUpBeforeClass(): void {
+		add_option( 'graphql_general_settings', self::$mock_opt );
 		$cat_post_id = wp_insert_post(
 			array(
 				'post_title'   => 'cat',
@@ -73,6 +93,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 	 * @throws Exception
 	 */
 	public function test_schema_errors_for_filters( string $query, string $expected_error ) {
+		$this->update_wpgraphql_query_depth( 'on', self::QUERY_DEPTH_CUSTOM );
 		$query  = $this->replace_ids( $query );
 		$result = graphql( array( 'query' => $query ) );
 		$this->assertEquals( $expected_error, $result['errors'][0]['message'] );
@@ -126,7 +147,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 				}',
 				'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.',
 			],
-			'relation_nesting_gt_10_should_return_error' => [
+			'relation_nesting_gt_11_should_return_error' => [
 				'query {
 					posts(
 						filter: {
@@ -150,14 +171,18 @@ class FilterQueryTest extends WP_UnitTestCase {
 																								{
 																									or: [
 																										{
-																											tag: {
-																												name: {eq: "small"}
-																											}
-																										},
-																										{
-																											category: {
-																												name: {eq: "feline"}
-																											}
+																											or: [
+																												{
+																													tag: {
+																														name: {eq: "small"}
+																													}
+																												},
+																												{
+																													category: {
+																														name: {eq: "feline"}
+																													}
+																												}
+																											]
 																										}
 																									]
 																								}
@@ -185,7 +210,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 						}
 					}
 				}',
-				'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (10) depth to proceed',
+				'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (' . self::QUERY_DEPTH_CUSTOM . ') depth to proceed',
 			],
 		);
 	}
@@ -198,6 +223,7 @@ class FilterQueryTest extends WP_UnitTestCase {
 	 * @throws Exception
 	 */
 	public function test_schema_exists_for_filters( string $query, string $expected_result ) {
+		$this->update_wpgraphql_query_depth( 'off', self::QUERY_DEPTH_DEFAULT );
 		$query               = $this->replace_ids( $query );
 		$result              = graphql( array( 'query' => $query ) );
 		$expected_result_arr = json_decode( $expected_result, true );
@@ -237,6 +263,23 @@ class FilterQueryTest extends WP_UnitTestCase {
 		);
 
 		return str_replace( $search, $replace, $query );
+	}
+
+	/**
+	 * Short function to update the WpGraphQL settings for custom query depth
+	 *
+	 * @param string $toggle_state on/off toggle for custom setting.
+	 * @param int $depth_limit depth limit to set, when toggleState value is 'on'.
+	 */
+	private function update_wpgraphql_query_depth( string $toggle_state, int $depth_limit ): void {
+		$wpgraphql_options                        = get_option( 'graphql_general_settings' );
+		$wpgraphql_options['query_depth_enabled'] = $toggle_state;
+		if ( $toggle_state === 'on' ) {
+			$wpgraphql_options['query_depth_max'] = '' . $depth_limit;
+		} else {
+			$wpgraphql_options['query_depth_max'] = '10';
+		}
+		update_option( 'graphql_general_settings', $wpgraphql_options );
 	}
 
 	public function filters_data_provider(): array {
