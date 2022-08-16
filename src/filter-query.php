@@ -26,7 +26,7 @@ class FilterQuery {
 	 *
 	 * @var int
 	 */
-	private $max_nesting_depth = 0;
+	private $max_nesting_depth;
 
 	/**
 	 * Constructor.
@@ -304,10 +304,9 @@ class FilterQuery {
 		$opt = get_option( 'graphql_general_settings' );
 		if ( ! empty( $opt ) && $opt !== false && $opt['query_depth_enabled'] === 'on' ) {
 			return $opt['query_depth_max'];
-		} elseif ( ! empty( $opt ) && $opt !== false && $opt['query_depth_enabled'] === 'off' ) {
-			return 10;
 		}
-		return 0;
+
+		return 10;
 	}
 
 	/**
