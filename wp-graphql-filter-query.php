@@ -69,5 +69,5 @@ function filter_query_get_supported_post_types(): array {
 }
 
 
-new FilterQuery();
-new AggregateQuery();
+( new FilterQuery() )->add_hooks();
+( new AggregateQuery() )->add_hooks();

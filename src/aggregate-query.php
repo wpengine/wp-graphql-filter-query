@@ -13,9 +13,11 @@ namespace WPGraphQLFilterQuery;
 class AggregateQuery {
 
 	/**
-	 * Constructor.
+	 * Add action and register hooks.
+	 *
+	 * @return void
 	 */
-	public function __construct() {
+	public function add_hooks(): void {
 		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_aggregation_fields' ] );
 	}
 
