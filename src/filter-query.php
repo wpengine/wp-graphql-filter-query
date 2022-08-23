@@ -29,9 +29,12 @@ class FilterQuery {
 	private $max_nesting_depth;
 
 	/**
-	 * Constructor.
+	 *
+	 * Add actions and filter.
+	 *
+	 * @return void
 	 */
-	public function __construct() {
+	public function add_hooks(): void {
 		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_fields' ] );
 
 		add_filter( 'graphql_RootQuery_fields', [ $this, 'apply_filters_input' ], 20 );
