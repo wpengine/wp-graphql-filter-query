@@ -56,3 +56,6 @@ gbuild-pull-requests:
 
 tail-debug-log:
 	$(DC) run -T --rm wp tail -f /var/www/html/wp-content/debug.log
+
+wp-version:
+	$(DC) exec wp bash -c 'cat /var/www/html/wp-includes/version.php | grep wp_version'
