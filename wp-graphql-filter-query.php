@@ -127,20 +127,20 @@ function show_admin_notice() {
  */
 function can_load_plugin() {
 
-	// Is WPGraphQL active?
-	if ( ! class_exists( 'WPGraphQL' ) ) {
-		return false;
-	}
+	// // Is WPGraphQL active?
+	// if ( ! class_exists( 'WPGraphQL' ) ) {
+	// 	return false;
+	// }
 
-	// Do we have a WPGraphQL version to check against?
-	if ( empty( defined( 'WPGRAPHQL_VERSION' ) ) ) {
-		return false;
-	}
+	// // Do we have a WPGraphQL version to check against?
+	// if ( empty( defined( 'WPGRAPHQL_VERSION' ) ) ) {
+	// 	return false;
+	// }
 
-	// Have we met the minimum version requirement?
-	if ( true === version_compare( WPGRAPHQL_VERSION, WPGRAPHQL_REQUIRED_MIN_VERSION, 'lt' ) ) {
-		return false;
-	}
+	// // Have we met the minimum version requirement?
+	// if ( true === version_compare( WPGRAPHQL_VERSION, WPGRAPHQL_REQUIRED_MIN_VERSION, 'lt' ) ) {
+	// 	return false;
+	// }
 
 	return true;
 }
