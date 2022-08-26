@@ -21,6 +21,13 @@
  * Domain Path:       /languages
  */
 
+namespace WPGraphQL\FILTER_QUERY;
+
+/**
+ * Define constants
+ */
+const WPGRAPHQL_REQUIRED_MIN_VERSION = '0.4.0';
+
 /**
  * Load files
  */
@@ -36,6 +43,19 @@ use WPGraphQLFilterQuery\FilterQuery;
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
+
+/**
+ * If either WPGraphQL is not active, show the admin notice and return.
+ */
+if ( false === can_load_plugin() ) {
+	// Show the admin notice.
+	add_action( 'admin_init', __NAMESPACE__ . '\show_admin_notice' );
+
+	return;
+}
+
+( new FilterQuery() )->add_hooks();
+( new AggregateQuery() )->add_hooks();
 
 /**
  * Get the supported post types.
@@ -68,6 +88,59 @@ function filter_query_get_supported_post_types(): array {
 	return $type_objects;
 }
 
+/**
+ * Show admin notice to admins if this plugin is active but WPGraphQL not.
+ *
+ * @return bool
+ */
+function show_admin_notice() {
 
-( new FilterQuery() )->add_hooks();
-( new AggregateQuery() )->add_hooks();
+	/**
+	 * For users with lower capabilities, don't show the notice.
+	 */
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return false;
+	}
+
+	add_action(
+		'admin_notices',
+		function() {
+			?>
+			<div class="error notice">
+				<p>
+					<?php
+					// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+					esc_html_e( 'WPGraphQL (v' . WPGRAPHQL_REQUIRED_MIN_VERSION . '+)  must be active for "wp-graphql-filter-query" to work' );
+					?>
+				</p>
+			</div>
+			<?php
+		}
+	);
+}
+
+
+/**
+ * Check whether WPGraphQL is active, and whether the minimum version requirement has been met.
+ *
+ * @return bool
+ */
+function can_load_plugin() {
+
+	// Is WPGraphQL active?
+	if ( ! class_exists( 'WPGraphQL' ) ) {
+		return false;
+	}
+
+	// Do we have a WPGraphQL version to check against?
+	if ( empty( defined( 'WPGRAPHQL_VERSION' ) ) ) {
+		return false;
+	}
+
+	// Have we met the minimum version requirement?
+	if ( true === version_compare( WPGRAPHQL_VERSION, WPGRAPHQL_REQUIRED_MIN_VERSION, 'lt' ) ) {
+		return false;
+	}
+
+	return true;
+}
