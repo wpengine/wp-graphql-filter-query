@@ -37,7 +37,7 @@ RUN echo "#!/bin/bash" > /usr/local/bin/install-wp-tests \
         && echo "*** install-wp-tests installed"
 
 # enable xdebug for local env
-RUN pecl install xdebug \
+RUN pecl install xdebug-3.1.0 \
     && cp /usr/local/etc/php/php.ini-development $php_ini_file_path \
     && printf ' \n\
 [xdebug] \n\
