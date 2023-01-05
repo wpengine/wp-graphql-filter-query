@@ -6,7 +6,8 @@
       "php": "7.4.23"
     },
     "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "phpstan/extension-installer": true
     }
   },
   "authors": [
@@ -24,13 +25,18 @@
     "squizlabs/php_codesniffer": "^3.6.0",
     "wp-coding-standards/wpcs": "^2.3.0",
     "wp-graphql/wp-graphql": "^1.8",
-    "spatie/phpunit-watcher": "^1.23"
+    "spatie/phpunit-watcher": "^1.23",
+    "phpstan/phpstan": "^1.9",
+    "php-stubs/wordpress-stubs": "^6.1",
+    "szepeviktor/phpstan-wordpress": "^1.1",
+    "phpstan/extension-installer": "^1.2"
   },
   "scripts": {
     "phpunit": "vendor/bin/phpunit",
     "lint": "vendor/bin/parallel-lint --exclude .git --exclude app --exclude vendor .",
     "phpcs": "phpcs",
     "phpcs:fix": "phpcbf",
+    "phpstan": "./vendor/bin/phpstan analyse --memory-limit=1G",
     "suite": [
       "@lint",
       "@phpcs",

@@ -1,0 +1,12 @@
+parameters:
+    level: 8
+    inferPrivatePropertyTypeFromConstructor: true
+    checkMissingIterableValueType: false
+    paths:
+      - wp-graphql-filter-query.php
+      - tests/
+      - src/
+    excludePaths:
+      analyseAndScan:
+        - */vendor/*
+    ignoreErrors:
