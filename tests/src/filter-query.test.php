@@ -83,6 +83,40 @@ class FilterQueryTest extends WP_UnitTestCase {
 				'graphql_plural_name' => 'zombies',
 			)
 		);
+
+		// Set up the labels for the custom taxonomy.
+		$labels = array(
+			'name'              => __( 'Sports', 'textdomain' ),
+			'singular_name'     => __( 'Sport', 'textdomain' ),
+			'search_items'      => __( 'Search Sports', 'textdomain' ),
+			'all_items'         => __( 'All Sports', 'textdomain' ),
+			'parent_item'       => __( 'Parent Sport', 'textdomain' ),
+			'parent_item_colon' => __( 'Parent Sport:', 'textdomain' ),
+			'edit_item'         => __( 'Edit Sport', 'textdomain' ),
+			'update_item'       => __( 'Update Sport', 'textdomain' ),
+			'add_new_item'      => __( 'Add New Sport', 'textdomain' ),
+			'new_item_name'     => __( 'New Sport Name', 'textdomain' ),
+			'menu_name'         => __( 'Sports', 'textdomain' ),
+		);
+
+		// Set up the arguments for the custom taxonomy.
+		$args = array(
+			'labels'              => $labels,
+			'hierarchical'        => true,
+			'public'              => true,
+			'show_ui'             => true,
+			'show_in_menu'        => true,
+			'show_admin_column'   => true,
+			'query_var'           => true,
+			'rewrite'             => array( 'slug' => 'sport' ),
+			'show_in_graphql'     => true,
+			'graphql_single_name' => 'sport',
+			'graphql_plural_name' => 'sports',
+
+		);
+
+		// Register the custom taxonomy.
+		register_taxonomy( 'sport', 'zombie', $args );
 	}
 
 	/**
@@ -303,7 +337,25 @@ class FilterQueryTest extends WP_UnitTestCase {
 				}',
 				'{"data": { "posts": {"nodes" : [{"title": "dog" , "content" : "<p>this is a dog</p>\n"}, {"title": "cat" , "content" : "<p>this is a cat</p>\n"}]}}}',
 			],
-
+			'zombie_valid_filter_sport_name_eq'            => [
+				'query {
+					zombies(
+						filter: {
+							sport: {
+								name: {
+									eq: "football"
+								}
+							}
+						}
+					) {
+						nodes {
+							title
+							content
+						}
+					}
+				}',
+				'{"data": { "zombies": {"nodes" : []}}}',
+			],
 			'posts_valid_filter_category_name_in'          => [
 				'query {
 					posts(
