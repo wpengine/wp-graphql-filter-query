@@ -1141,62 +1141,6 @@ class FilterQueryTest extends WP_UnitTestCase {
 				}',
 				'{"data": { "posts": {"nodes" : []}}}',
 			],
-			'pages_accept_valid_tax_filter_args'           => [
-				'query {
-					pages(
-						filter: {
-							category: {
-								id: {
-									eq: 10
-								},
-								name: {
-									eq: "foo"
-								}
-							},
-							tag: {
-								name: {
-									in: ["foo", "bar"],
-									like: "tst"
-								}
-							}
-						}
-					) {
-						nodes {
-							title
-							content
-						}
-					}
-				}',
-				'{"data": { "pages": {"nodes" : []}}}',
-			],
-			'zombies_accept_valid_tax_filter_args'         => [
-				'query {
-					zombies(
-						filter: {
-							category: {
-								id: {
-									eq: 10
-								},
-								name: {
-									eq: "foo"
-								}
-							},
-							tag: {
-								name: {
-									in: ["foo", "bar"],
-									like: "tst"
-								}
-							}
-						}
-					) {
-						nodes {
-							title
-							content
-						}
-					}
-				}',
-				'{"data": { "zombies": {"nodes" : []}}}',
-			],
 			'posts_reject_invalid_tax_filter_args'         => [
 				'query {
 					posts(

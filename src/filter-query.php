@@ -56,7 +56,7 @@ class FilterQuery {
 				$args = is_array( $fields[ $post_type['plural_name'] ]['args'] ) ? $fields[ $post_type['plural_name'] ]['args'] : [];
 
 				$args['filter'] = [
-					'type'        => 'TaxonomyFilter',
+					'type'        => ucfirst( $post_type['name'] ) . 'TaxonomyFilter',
 					'description' => __( 'Filtering Queried Results By Taxonomy Objects', 'wp-graphql-filter-query' ),
 				];
 
@@ -98,15 +98,16 @@ class FilterQuery {
 	/**
 	 * Check if operator is like or notLike
 	 *
-	 * @param array $filter_obj A Filter object, for wpQuery access, to build upon within each recursive call.
-	 * @param int   $depth A depth-counter to track recusrive call depth.
+	 * @param string $post_type the current post type.
+	 * @param array  $filter_obj A Filter object, for wpQuery access, to build upon within each recursive call.
+	 * @param int    $depth A depth-counter to track recusrive call depth.
 	 *
 	 * @throws FilterException Throws max nested filter depth exception, caught by wpgraphql response.
 	 * @throws FilterException Throws and/or not allowed as siblings exception, caught by wpgraphql response.
 	 * @throws FilterException Throws empty relation (and/or) exception, caught by wpgraphql response.
 	 * @return array
 	 */
-	private function resolve_taxonomy( array $filter_obj, int $depth ): array {
+	private function resolve_taxonomy( string $post_type, array $filter_obj, int $depth ): array {
 		if ( $depth > $this->max_nesting_depth ) {
 			throw new FilterException( 'The Filter\'s relation allowable depth nesting has been exceeded. Please reduce to allowable (' . $this->max_nesting_depth . ') depth to proceed' );
 		} elseif ( array_key_exists( 'and', $filter_obj ) && array_key_exists( 'or', $filter_obj ) ) {
@@ -115,24 +116,43 @@ class FilterQuery {
 
 		$temp_query = [];
 		foreach ( $filter_obj as $root_obj_key => $value ) {
-			if ( in_array( $root_obj_key, $this->taxonomy_keys, true ) ) {
+			if ( in_array( $root_obj_key, $this->relation_keys, true ) ) {
+				$nested_obj_array = $value;
+				$wp_query_array   = [];
+
+				if ( count( $nested_obj_array ) === 0 ) {
+					throw new FilterException( 'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.' );
+				}
+				foreach ( $nested_obj_array as $nested_obj_index => $nested_obj_value ) {
+					$wp_query_array[ $nested_obj_index ]             = $this->resolve_taxonomy( $post_type, $nested_obj_value, ++$depth );
+					$wp_query_array[ $nested_obj_index ]['relation'] = 'AND';
+				}
+				$wp_query_array['relation'] = strtoupper( $root_obj_key );
+				$temp_query[]               = $wp_query_array;
+			} else {
 				$attribute_array = $value;
 				foreach ( $attribute_array as $field_key => $field_kvp ) {
 					foreach ( $field_kvp as $operator => $terms ) {
 						$mapped_operator  = $this->operator_mappings[ $operator ] ?? 'IN';
 						$is_like_operator = $this->is_like_operator( $operator );
-						$taxonomy         = $root_obj_key === 'tag' ? 'post_tag' : 'category';
+
+						// TODO will have to map the taxonomy slug somehow
+						// i.e from wp-graphql tag translates to post_tag slug
+						// custom taxonomies will also have this issue
+						// we cannot use the graphql field name as the $root_obj_key
+						// will have to introduce a function called filter_query_get_taxonomy_slug($post_type, $root_obj_key).
+						$taxonomy_slug = $this->get_taxonomy_slug( $post_type, $root_obj_key );
 
 						$terms = ! $is_like_operator ? $terms : get_terms(
 							[
-								'taxonomy'   => $taxonomy,
+								'taxonomy'   => $taxonomy_slug,
 								'fields'     => 'ids',
 								'name__like' => esc_attr( $terms ),
 							]
 						);
 
 						$result = [
-							'taxonomy' => $taxonomy,
+							'taxonomy' => $taxonomy_slug,
 							'field'    => ( $field_key === 'id' ) || $is_like_operator ? 'term_id' : 'name',
 							'terms'    => $terms,
 							'operator' => $mapped_operator,
@@ -141,22 +161,29 @@ class FilterQuery {
 						$temp_query[] = $result;
 					}
 				}
-			} elseif ( in_array( $root_obj_key, $this->relation_keys, true ) ) {
-				$nested_obj_array = $value;
-				$wp_query_array   = [];
-
-				if ( count( $nested_obj_array ) === 0 ) {
-					throw new FilterException( 'The Filter relation array specified has no children. Please remove the relation key or add one or more appropriate objects to proceed.' );
-				}
-				foreach ( $nested_obj_array as $nested_obj_index => $nested_obj_value ) {
-					$wp_query_array[ $nested_obj_index ]             = $this->resolve_taxonomy( $nested_obj_value, ++$depth );
-					$wp_query_array[ $nested_obj_index ]['relation'] = 'AND';
-				}
-				$wp_query_array['relation'] = strtoupper( $root_obj_key );
-				$temp_query[]               = $wp_query_array;
 			}
 		}
 		return $temp_query;
+	}
+
+	/**
+	 * Retrieves the slug of the taxonomy associated with the specified post type and GraphQL singular name.
+	 *
+	 * @param string $post_type The post type for which to retrieve the taxonomy slug.
+	 * @param string $graphql_singular_name The GraphQL singular name of the taxonomy.
+	 * @return string|false The slug of the associated taxonomy, or false if no taxonomy is found.
+	 */
+	private function get_taxonomy_slug( string $post_type, string $graphql_singular_name ) {
+		$taxonomies = get_object_taxonomies(
+			$post_type,
+			'objects'
+		);
+
+		foreach ( $taxonomies as $taxonomy ) {
+			if ( strtolower( $taxonomy->graphql_single_name ) === strtolower( $graphql_singular_name ) ) {
+				return $taxonomy->name;
+			}
+		}
 	}
 
 	/**
@@ -177,7 +204,8 @@ class FilterQuery {
 
 		$filter_args_root = $args['filter'];
 
-		$query_args['tax_query'][] = $this->resolve_taxonomy( $filter_args_root, 0, [] );
+		// TODO: handle multiple post types here.
+		$query_args['tax_query'][] = $this->resolve_taxonomy( $query_args['post_type'][0], $filter_args_root, 0, [] );
 
 		self::$query_args = $query_args;
 		return $query_args;
@@ -272,30 +300,46 @@ class FilterQuery {
 			]
 		);
 
-		register_graphql_input_type(
-			'TaxonomyFilter',
-			[
+		foreach ( filter_query_get_supported_post_types() as $post_type ) {
+			$filter_obj_name = ucfirst( $post_type['name'] ) . 'TaxonomyFilter';
+
+			$config = [
 				'description' => __( 'Taxonomies Where Filtering Supported', 'wp-graphql-filter-query' ),
 				'fields'      => [
-					'tag'      => [
-						'type'        => 'TaxonomyFilterFields',
-						'description' => __( 'Tags Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
-					],
-					'category' => [
-						'type'        => 'TaxonomyFilterFields',
-						'description' => __( 'Category Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
-					],
-					'and'      => [
-						'type'        => [ 'list_of' => 'TaxonomyFilter' ],
+					'and' => [
+						'type'        => [ 'list_of' => $filter_obj_name ],
 						'description' => __( '\'AND\' Array of Taxonomy Objects Allowable For Filtering', 'wp-graphql-filter-query' ),
 					],
-					'or'       => [
-						'type'        => [ 'list_of' => 'TaxonomyFilter' ],
+					'or'  => [
+						'type'        => [ 'list_of' => $filter_obj_name ],
 						'description' => __( '\'OR\' Array of Taxonomy Objects Allowable For Filterin', 'wp-graphql-filter-query' ),
 					],
 				],
-			]
-		);
+			];
+
+			// get post types.
+
+			// get taxonomies for post types.
+				$taxonomies = get_object_taxonomies(
+					$post_type['name'],
+					'objects'
+				);
+
+			foreach ( $taxonomies as $taxonomy ) {
+				$graphql_name = $taxonomy->graphql_single_name;
+
+				$config['fields'][ $graphql_name ] = [
+					'type'        => 'TaxonomyFilterFields',
+					'description' => __( 'Category Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
+					'tester'      => 'test',
+				];
+			}
+
+			register_graphql_input_type(
+				ucfirst( $post_type['name'] ) . 'TaxonomyFilter',
+				$config
+			);
+		}
 	}
 
 	/**
