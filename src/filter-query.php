@@ -135,13 +135,7 @@ class FilterQuery {
 					foreach ( $field_kvp as $operator => $terms ) {
 						$mapped_operator  = $this->operator_mappings[ $operator ] ?? 'IN';
 						$is_like_operator = $this->is_like_operator( $operator );
-
-						// TODO will have to map the taxonomy slug somehow
-						// i.e from wp-graphql tag translates to post_tag slug
-						// custom taxonomies will also have this issue
-						// we cannot use the graphql field name as the $root_obj_key
-						// will have to introduce a function called filter_query_get_taxonomy_slug($post_type, $root_obj_key).
-						$taxonomy_slug = $this->get_taxonomy_slug( $post_type, $root_obj_key );
+						$taxonomy_slug    = $this->get_taxonomy_slug( $post_type, $root_obj_key );
 
 						$terms = ! $is_like_operator ? $terms : get_terms(
 							[
