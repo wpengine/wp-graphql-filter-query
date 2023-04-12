@@ -36,7 +36,6 @@ class FilterQuery {
 	 */
 	public function add_hooks(): void {
 		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_fields' ] );
-
 		add_filter( 'graphql_RootQuery_fields', [ $this, 'apply_filters_input' ], 20 );
 		add_filter( 'graphql_connection_query_args', [ $this, 'apply_recursive_filter_resolver' ], 10, 2 );
 	}
@@ -82,13 +81,6 @@ class FilterQuery {
 	);
 
 	/**
-	 * $taxonomy_keys.
-	 *
-	 * @var array
-	 */
-	public $taxonomy_keys = [ 'tag', 'category' ];
-
-	/**
 	 * $relation_keys.
 	 *
 	 * @var array
@@ -100,11 +92,11 @@ class FilterQuery {
 	 *
 	 * @param string $post_type the current post type.
 	 * @param array  $filter_obj A Filter object, for wpQuery access, to build upon within each recursive call.
-	 * @param int    $depth A depth-counter to track recusrive call depth.
+	 * @param int    $depth A depth-counter to track recursive call depth.
 	 *
-	 * @throws FilterException Throws max nested filter depth exception, caught by wpgraphql response.
-	 * @throws FilterException Throws and/or not allowed as siblings exception, caught by wpgraphql response.
-	 * @throws FilterException Throws empty relation (and/or) exception, caught by wpgraphql response.
+	 * @throws FilterException Throws max nested filter depth exception, caught by WPGraphQL response.
+	 * @throws FilterException Throws and/or not allowed as siblings exception, caught by WPGraphQL response.
+	 * @throws FilterException Throws empty relation (and/or) exception, caught by WPGraphQL response.
 	 * @return array
 	 */
 	private function resolve_taxonomy( string $post_type, array $filter_obj, int $depth ): array {
@@ -306,31 +298,25 @@ class FilterQuery {
 					],
 					'or'  => [
 						'type'        => [ 'list_of' => $filter_obj_name ],
-						'description' => __( '\'OR\' Array of Taxonomy Objects Allowable For Filterin', 'wp-graphql-filter-query' ),
+						'description' => __( '\'OR\' Array of Taxonomy Objects Allowable For Filtering', 'wp-graphql-filter-query' ),
 					],
 				],
 			];
 
-			// get post types.
-
-			// get taxonomies for post types.
-				$taxonomies = get_object_taxonomies(
-					$post_type['name'],
-					'objects'
-				);
+			$taxonomies = get_object_taxonomies(
+				$post_type['name'],
+				'objects'
+			);
 
 			foreach ( $taxonomies as $taxonomy ) {
-				$graphql_name = $taxonomy->graphql_single_name;
-
-				$config['fields'][ $graphql_name ] = [
+				$config['fields'][ $taxonomy->graphql_single_name ] = [
 					'type'        => 'TaxonomyFilterFields',
-					'description' => __( 'Category Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
-					'tester'      => 'test',
+					'description' => __( 'Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
 				];
 			}
 
 			register_graphql_input_type(
-				ucfirst( $post_type['name'] ) . 'TaxonomyFilter',
+				$filter_obj_name,
 				$config
 			);
 		}
