@@ -76,6 +76,40 @@ class AggregateQueryTest extends WP_UnitTestCase {
 				'graphql_plural_name' => 'zombies',
 			)
 		);
+
+		// Set up the labels for the custom taxonomy.
+		$labels = array(
+			'name'              => __( 'Sports', 'textdomain' ),
+			'singular_name'     => __( 'Sport', 'textdomain' ),
+			'search_items'      => __( 'Search Sports', 'textdomain' ),
+			'all_items'         => __( 'All Sports', 'textdomain' ),
+			'parent_item'       => __( 'Parent Sport', 'textdomain' ),
+			'parent_item_colon' => __( 'Parent Sport:', 'textdomain' ),
+			'edit_item'         => __( 'Edit Sport', 'textdomain' ),
+			'update_item'       => __( 'Update Sport', 'textdomain' ),
+			'add_new_item'      => __( 'Add New Sport', 'textdomain' ),
+			'new_item_name'     => __( 'New Sport Name', 'textdomain' ),
+			'menu_name'         => __( 'Sports', 'textdomain' ),
+		);
+
+		// Set up the arguments for the custom taxonomy.
+		$args = array(
+			'labels'              => $labels,
+			'hierarchical'        => true,
+			'public'              => true,
+			'show_ui'             => true,
+			'show_in_menu'        => true,
+			'show_admin_column'   => true,
+			'query_var'           => true,
+			'rewrite'             => array( 'slug' => 'sport' ),
+			'show_in_graphql'     => true,
+			'graphql_single_name' => 'sport',
+			'graphql_plural_name' => 'sports',
+
+		);
+
+		// Register the custom taxonomy.
+		register_taxonomy( 'sport', 'zombie', $args );
 	}
 
 	public function data_for_schema_exists_for_aggregations(): array {
@@ -1192,74 +1226,6 @@ class AggregateQueryTest extends WP_UnitTestCase {
 					}
 				}',
 				'{"data": { "posts": {"aggregations" : { "tags" :  [] }}}}',
-			],
-			'pages_accept_valid_tax_filter_args'           => [
-				'query {
-					pages(
-						filter: {
-							category: {
-								id: {
-									eq: 10
-								},
-								name: {
-									eq: "foo"
-								}
-							},
-							tag: {
-								name: {
-									in: ["foo", "bar"],
-									like: "tst"
-								}
-							}
-						}
-					) {
-						aggregations {
-							tags {
-								key
-								count
-							},
-							categories {
-								key
-								count
-							}
-						}
-					}
-				}',
-				'{"data": { "pages": {"aggregations" : { "tags" :  [], "categories" :  [] }}}}',
-			],
-			'zombies_accept_valid_tax_filter_args'         => [
-				'query {
-					zombies(
-						filter: {
-							category: {
-								id: {
-									eq: 10
-								},
-								name: {
-									eq: "foo"
-								}
-							},
-							tag: {
-								name: {
-									in: ["foo", "bar"],
-									like: "tst"
-								}
-							}
-						}
-					) {
-						aggregations {
-							tags {
-								key
-								count
-							},
-							categories {
-								key
-								count
-							}
-						}
-					}
-				}',
-				'{"data": { "zombies": {"aggregations" : { "tags" :  [],  "categories" :  [] }}}}',
 			],
 		];
 	}

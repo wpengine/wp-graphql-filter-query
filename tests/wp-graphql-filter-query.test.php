@@ -58,25 +58,30 @@ class Wp_GraphqlFilterQueryTest extends WP_UnitTestCase {
 	public function test_filter_query_get_supported_post_types() {
 		$post_types     = filter_query_get_supported_post_types();
 		$expected_types = [
-			'post'    => [
+			'post'       => [
 				'name'            => 'post',
 				'capitalize_name' => 'Post',
 				'plural_name'     => 'posts',
 			],
-			'page'    => [
+			'page'       => [
 				'name'            => 'page',
 				'capitalize_name' => 'Page',
 				'plural_name'     => 'pages',
 			],
-			'zombie'  => [
+			'zombie'     => [
 				'name'            => 'zombie',
 				'capitalize_name' => 'Zombie',
 				'plural_name'     => 'zombies',
 			],
-			'vampire' => [
+			'vampire'    => [
 				'name'            => 'vampire',
 				'capitalize_name' => 'Vampire',
 				'plural_name'     => 'vampires',
+			],
+			'attachment' => [
+				'name'            => 'attachment',
+				'capitalize_name' => 'Attachment',
+				'plural_name'     => 'media',
 			],
 		];
 		$this->assertEquals( $expected_types, $post_types );

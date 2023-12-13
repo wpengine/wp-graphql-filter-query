@@ -34,7 +34,7 @@ services:
       - ./.wordpress/wordpress:/var/www/html
       - ./:/var/www/html/wp-content/plugins/wp-graphql-filter-query
     ports:
-      - 8080:80
+      - 8081:80
     depends_on:
       - db
 
