@@ -8,4 +8,6 @@
   "phpSniffer.autoDetect": true,
   "editor.formatOnSaveTimeout": 5000,
   "phpcbf.debug": true,
+  "phpsab.executablePathCBF": "vendor/bin/phpcbf",
+  "phpsab.executablePathCS": "vendor/bin/phpcs",
 }

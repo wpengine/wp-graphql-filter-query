@@ -309,8 +309,8 @@ class FilterQuery {
 			);
 
 			foreach ( $taxonomies as $taxonomy ) {
-				// Skip if no graphql config found
-				if($taxonomy->graphql_single_name == null) {
+				// Skip if no graphql config found.
+				if ( $taxonomy->graphql_single_name === null ) {
 					continue;
 				}
 
