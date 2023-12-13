@@ -181,7 +181,7 @@ class FilterQuery {
 	 * @return array
 	 */
 	public function apply_recursive_filter_resolver( array $query_args, AbstractConnectionResolver $connection_resolver ): array {
-		$args                    = $connection_resolver->getArgs();
+		$args                    = $connection_resolver->get_args();
 		$this->max_nesting_depth = $this->get_query_depth();
 
 		if ( empty( $args['filter'] ) ) {
