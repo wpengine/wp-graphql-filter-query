@@ -309,6 +309,11 @@ class FilterQuery {
 			);
 
 			foreach ( $taxonomies as $taxonomy ) {
+				// Skip if no graphql config found
+				if($taxonomy->graphql_single_name == null) {
+					continue;
+				}
+
 				$config['fields'][ $taxonomy->graphql_single_name ] = [
 					'type'        => 'TaxonomyFilterFields',
 					'description' => __( 'Object Fields Allowable For Filtering', 'wp-graphql-filter-query' ),
