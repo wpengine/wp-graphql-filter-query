@@ -8,6 +8,7 @@
 namespace WPGraphQLFilterQuery;
 
 use WPGraphQL\Data\Connection\AbstractConnectionResolver;
+use function WPGraphQL\FILTER_QUERY\filter_query_get_supported_post_types;
 
 /**
  * Main class.

@@ -6,6 +6,7 @@
  */
 
 namespace WPGraphQLFilterQuery;
+use function WPGraphQL\FILTER_QUERY\filter_query_get_supported_post_types;
 
 /**
  * Main class.
