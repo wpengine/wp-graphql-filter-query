@@ -37,7 +37,7 @@ class FilterQuery {
 	public function add_hooks(): void {
 		add_action( 'graphql_register_types', [ $this, 'extend_wp_graphql_fields' ] );
 
-		add_filter( 'graphql_RootQuery_fields', [ $this, 'apply_filters_input' ], 20 );
+		add_filter( 'graphql_RootQuery_fields', [ $this, 'apply_filters_input' ], 30 );
 		add_filter( 'graphql_connection_query_args', [ $this, 'apply_recursive_filter_resolver' ], 10, 2 );
 	}
 

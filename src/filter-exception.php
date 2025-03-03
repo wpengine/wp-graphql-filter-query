@@ -18,16 +18,7 @@ class FilterException extends \Exception implements ClientAware {
 	 *
 	 * @return bool isSafe from ClientAware.
 	 */
-	public function isClientSafe() {
+	public function isClientSafe(): bool {
 		return true;
-	}
-
-	/**
-	 * Relay ClientAware fn.
-	 *
-	 * @return string category from ClientAware.
-	 */
-	public function getCategory() {
-		return 'wp-graphql-filter-query plugin';
 	}
 }
