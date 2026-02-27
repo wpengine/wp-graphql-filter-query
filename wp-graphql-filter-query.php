@@ -24,7 +24,10 @@
 /**
  * Load files
  */
-require_once dirname( __DIR__ ) . '/wp-graphql/vendor/webonyx/graphql-php/src/Error/ClientAware.php';
+// Load composer autoloader for dependencies
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+}
 
 require_once __DIR__ . '/src/aggregate-query.php';
 require_once __DIR__ . '/src/filter-exception.php';
