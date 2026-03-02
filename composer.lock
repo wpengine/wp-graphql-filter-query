@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec6ae315f134b7670af944818161da5c",
+    "content-hash": "ea2f80ee508f925862685e62334edec0",
     "packages": [],
     "packages-dev": [
         {
@@ -3895,16 +3895,16 @@
         },
         {
             "name": "yoast/phpunit-polyfills",
-            "version": "1.1.5",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Yoast/PHPUnit-Polyfills.git",
-                "reference": "41aaac462fbd80feb8dd129e489f4bbc53fe26b0"
+                "reference": "3b59adeef77fb1c03ff5381dbb9d68b0aaff3171"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Yoast/PHPUnit-Polyfills/zipball/41aaac462fbd80feb8dd129e489f4bbc53fe26b0",
-                "reference": "41aaac462fbd80feb8dd129e489f4bbc53fe26b0",
+                "url": "https://api.github.com/repos/Yoast/PHPUnit-Polyfills/zipball/3b59adeef77fb1c03ff5381dbb9d68b0aaff3171",
+                "reference": "3b59adeef77fb1c03ff5381dbb9d68b0aaff3171",
                 "shasum": ""
             },
             "require": {
@@ -3912,14 +3912,12 @@
                 "phpunit/phpunit": "^4.8.36 || ^5.7.21 || ^6.0 || ^7.0 || ^8.0 || ^9.0"
             },
             "require-dev": {
-                "php-parallel-lint/php-console-highlighter": "^1.0.0",
-                "php-parallel-lint/php-parallel-lint": "^1.4.0",
-                "yoast/yoastcs": "^3.2.0"
+                "yoast/yoastcs": "^2.3.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "4.x-dev"
+                    "dev-main": "2.x-dev"
                 }
             },
             "autoload": {
@@ -3951,10 +3949,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Yoast/PHPUnit-Polyfills/issues",
-                "security": "https://github.com/Yoast/PHPUnit-Polyfills/security/policy",
                 "source": "https://github.com/Yoast/PHPUnit-Polyfills"
             },
-            "time": "2025-08-10T04:54:36+00:00"
+            "time": "2023-03-30T23:39:05+00:00"
         },
         {
             "name": "yosymfony/resource-watcher",
