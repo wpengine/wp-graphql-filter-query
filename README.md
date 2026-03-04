@@ -1,5 +1,8 @@
 # WPGraphQL Filter Query
 
+>[!CAUTION]
+> **This repository has been archived.** WPGraphQL Filter Query is no longer actively maintained. No further updates, feature development, or support will be provided. Thank you for using WPGraphQL Filter Query.
+
 Adds taxonomy filtering and aggregation support to [WPGraphQL](https://www.wpgraphql.com).
 
 - [WPGraphQL Filter Query](#wpgraphql-filter-query)
