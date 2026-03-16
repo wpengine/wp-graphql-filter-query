@@ -1,5 +1,7 @@
 <?php
 
+use function WPGraphQL\FILTER_QUERY\filter_query_get_supported_post_types;
+
 class Wp_GraphqlFilterQueryTest extends WP_UnitTestCase {
 
 	protected function setUp(): void {
